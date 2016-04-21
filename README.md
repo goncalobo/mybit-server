@@ -14,8 +14,7 @@ Dependencies
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "morgan": "~1.6.1",
-    "seriate": "^0.6.1",
-    "serve-favicon": "~2.3.0"
+    "seriate": "^0.6.1"
   }
 ```
 
