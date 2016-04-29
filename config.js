@@ -1,6 +1,6 @@
 module.exports = {
     sqlConfig : {
-        server : "127.0.0.1",
+        server : "",
         user : "",
         password : "",
         database : ""
@@ -13,5 +13,6 @@ module.exports = {
     },
     cmxConfig : {
         params: ''
-    }
-}
+    },
+    secret: 'mybitsecretkey'
+};

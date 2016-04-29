@@ -4,12 +4,16 @@ var logger = require('morgan');
 var sql = require('seriate');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var config = require('./config');
 
 var routes = require('./routes/index');
 
-sql.setDefault(require('./config.js').sqlConfig);
+
+sql.setDefault(config.sqlConfig);
 
 var app = express();
+
+app.set('secret', config.secret);
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -17,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/API',routes);
+app.use('/',routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

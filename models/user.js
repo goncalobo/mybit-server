@@ -1,7 +1,10 @@
 var sql = require('seriate');
 
-var findUser = function (username) {
-    //sql.execute(...);
+var selectFromDB = function(username){
+    return;
+}
+
+var findUser = function (email) {
     return {
         id: 0,
         email: "user@sonae.pt",
@@ -21,5 +24,6 @@ var insertUser = function(email, password) {
 
 module.exports = {
     findUser: findUser,
-    insertUser: insertUser
+    insertUser: insertUser,
+    selectFromDB : selectFromDB
 };
