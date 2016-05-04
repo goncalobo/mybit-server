@@ -8,7 +8,7 @@ exports.getUser = function(req, res) {
 
 exports.postUser = function(req, res) {
     res.json(
-        User.insertUser(req.body.email, req.body.password, function(err) {
+        User.insertUser(req.body.email, function(err) {
         if (err) {
             res.send(err);
         }

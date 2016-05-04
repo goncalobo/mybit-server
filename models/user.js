@@ -1,10 +1,7 @@
 var sql = require('seriate');
 
-var selectFromDB = function(username){
-    return;
-}
-
-var findUser = function (email) {
+var findUser = function (username) {
+    //sql.execute(...);
     return {
         id: 0,
         email: "user@sonae.pt",
@@ -12,18 +9,34 @@ var findUser = function (email) {
     }
 }
 
-var insertUser = function(email, password) {
+var insertUser = function(email) {/*
+    var token = '2L460fWm8XT1KUl1KK45b89rQANt7Bhs';
+    var expires = new Date();
     return sql.execute( {
         query: sql.fromFile('../sql/insertUser'),
         params: {
-            email : email,
-            password : password
+            email :{
+                type : sql.VARCHAR,
+                val: email
+            },
+            token : {
+                type : sql.VARCHAR,
+                val : token
+            },
+            expires: {
+                type : sql.DATETIME,
+                val : expires
+            }
         }
-    } )
+    } ).then( function( results ) {
+        console.log( results );
+    }, function( err ) {
+        console.log( "Something bad happened:", err );
+    } );
+*/
 };
 
 module.exports = {
     findUser: findUser,
-    insertUser: insertUser,
-    selectFromDB : selectFromDB
+    insertUser: insertUser
 };
