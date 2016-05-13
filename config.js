@@ -8,10 +8,12 @@ module.exports = {
         database : "mybitdb"
     },
     activeDirectoryConfig : {
-        url: '',
-        baseDN: 'hostname dcldap.mch.moc.sgps',
-        username: 'feupuser01',
-        password: 'feup%01'
+        url: 'ldap://dcldap.mch.moc.sgps',
+        baseDN: 'DC=mch,DC=moc,DC=sgps',
+        usersBaseDN: 'OU=DSI,DC=mch,DC=moc,DC=sgps',
+        username: 'FEUPUSER01@mch.moc.sgps',
+        password: 'feup%01',
+        usersOU: 'Matosinhos'
     },
     cmxConfig : {
         host: '10.126.73.43',

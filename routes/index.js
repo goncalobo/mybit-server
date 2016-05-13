@@ -8,81 +8,113 @@ var router = express.Router();
 
 var authController = require('../controllers/auth');
 var userController = require('../controllers/user');
+var adController = require('../controllers/activedirectory');
 
 
 router.route('/')
-.get(function (req, res) {
-    res.json({
-        message: "Successfully connected to mybit API."
-    })
-});
+    .get(function (req, res) {
+        res.json({
+            message: "Successfully connected to mybit API."
+        })
+    });
 
 
 //Session Routes
 router.route('/Auth')
-.post(authController.generateToken);
+    .post(authController.generateToken);
 
-router.route('/Auth/refresh')
-.get(authController.refreshToken);
+router.route('/Auth/Refresh')
+    .get(authController.refreshToken);
 
 // User Routes
 router.route('/User')
-.get(userController.getUser)
-.post(userController.postUser);
-    //.delete(userController.deleteUser);
+    .get(userController.getUser)
+    .post(userController.postUser);
+//.delete(userController.deleteUser);
 
+router.use(authController.verifyToken);
 
-    router.use(authController.verifyToken);
+// AD Routes
+router.route('/AD/GetAllUsers')
+    .get(adController.getAllUsers);
 
+router.route('/AD/GetTeams')
+    .get(adController.getTeams);
+
+router.route('/AD/GetTeamMembers')
+    .get(adController.getTeamMembers);
 
 // CMX Routes
-router.route('/CMX/GetTotalActive')
-.get(function(req, res){
-    var options = {
-        host: cmxConfig.host,
-        port: cmxConfig.port,
-        path: '/api/location/v2/clients/count',
-        method: 'GET',
-        rejectUnauthorized: false,
-    headers: {
-            'Content-Type': 'application/json',
-            'Authorization': cmxConfig.auth
+router.route('/CMX/GetLocation')
+    .get(function(req, res){
+        var options = {
+            host: cmxConfig.host,
+            port: cmxConfig.port,
+            path: '/api/location/v2/clients?username='+req.query.username,
+            method: 'GET',
+            rejectUnauthorized: false,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': cmxConfig.auth
+            }
         }
-    }
 
-req = https.request(options, function(result)
-{
-    result.setEncoding('utf8');
+        //Ter a certeza que foi passado um parametro username e verificar se existe na db
+        if(req.query.username == undefined){
+            res.json({message:'Please pass an username as parameter'});
+        }
 
-    result.on('data', function (chunk)
-    {
-        var totalActive = JSON.parse(chunk);
-        res.json({"TotalActive":totalActive.count});
-    });
+        var data;
 
-    result.on('end', function(result)
-    {
-    });
-});
+        req = https.request(options, function(result)
+        {
+            result.setEncoding('utf8');
+            result.on('data', function (chunk)
+            {
+                data = JSON.parse(chunk);
+            });
 
-req.on('error', function(e)
-{
-    res.json({message:'Can\'t connect to cisco cmx.'});
-});
+            result.on('end', function(result)
+            {
+                var info = {
+                    "UserName" : data[0].userName,
+                    "MacAddress" : data[0].macAddress,
+                  //"LastActivity" : Date(Number(data[0].changedOn)).toString(),
+                    "MapInfo" : data[0].mapInfo.mapHierarchyString,
+                    "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
+                    "Coordinates" : {
+                        "x" : data[0].mapCoordinate.x,
+                        "y" : data[0].mapCoordinate.y
+                    },
+                    "FloorInfo" : {
+                        "length": data[0].mapInfo.floorDimension.length,
+                        "width": data[0].mapInfo.floorDimension.width
+                    }
+                };
+                res.send(info);
+            });
+        });
 
-req.end();
+        req.on('error', function(e)
+        {
+            res.json({message:'Can\'t connect to cisco cmx.'});
+        });
 
-})
+        req.end();
+
+    })
+
+
 
 // Dummy routes for testing purposes.
 router.route('/Dummy/GetLocation')
-.get(function (req, res) {
-    res.json({
-        coordinates: {x: 0, y: 0},
-        floor: 4,
-        orientation: "West"
-    })
-});
+    .get(function (req, res) {
+        res.json({
+            coordinates: {x: 0, y: 0},
+            floor: 4,
+            orientation: "West"
+        })
+    });
 
 
 exports.getJSON = function(options, onResult)
