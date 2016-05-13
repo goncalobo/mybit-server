@@ -23,7 +23,7 @@ var createSession = function(username, secret) {
 
     //Verificar se os dados estao corretos
     var token = jwt.sign({username : username}, secret, {
-                        expiresIn: "12 days" // expires in 3*24 hours
+                        expiresIn: "14 days" // expires in 3*24 hours
                     });
     console.log('\n JWT Token generated');
     return token;

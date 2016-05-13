@@ -10,12 +10,36 @@ var ADConfig = require('../config.js').activeDirectoryConfig;
 var AD = new ActiveDirectory(ADConfig);
 
 exports.generateToken = function (req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
+
+    const username = req.body.username;
+    const password = req.body.password;
+
+    var secret = req.body.secret;
+
+    if(secret != undefined){
+        if(secret === require('../config').secret){
+            console.log('Authing service.\n');
+            var token = Session.createSession(username, secret);
+            return res.json({
+                success : true,
+                token : token
+            });
+        }
+
+        return res.json({
+            error: "Wrong secret."
+        })
+    }
+
+    secret = require('../config').secret;
+
+    if(username == undefined || password == undefined)
+            return res.json({
+                error: "Username/password not sent."
+            })
+
 
     console.log('Authing user in AD with ' + username + '|' + password + '\n');
-
-    var secret = require('../config').secret;
 
     AD.authenticate(username, password, function(err, auth) {
         if (err) {
@@ -29,7 +53,7 @@ exports.generateToken = function (req, res) {
         }
         if (auth) {
             console.log('Authenticated!');
-            
+
             var token = Session.createSession(username, secret);
             console.log('Username: '+ username + '\n');
             return res.json({
