@@ -6,6 +6,7 @@ var authController = require('../controllers/auth');
 var userController = require('../controllers/user');
 var adController = require('../controllers/activedirectory');
 var cmxController = require('../controllers/cmx');
+var bookingController = require('../controllers/booking');
 
 
 router.route('/')
@@ -45,6 +46,9 @@ router.route('/AD/GetTeamMembers')
 router.route('/CMX/GetLocation')
     .get(cmxController.getLocation);
 
+// Booking Routes
+router.route('/Booking/GetRooms')
+    .get(bookingController.getRooms);
 
 // Dummy routes for testing purposes.
 router.route('/Dummy/GetLocation')

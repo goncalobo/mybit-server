@@ -1,14 +1,10 @@
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
-var sql = require('seriate');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-
-sql.setDefault(require('./config.js').sqlConfig);
-sql.addConnection(require('./config.js').sqlConfig);
 
 var app = express();
 

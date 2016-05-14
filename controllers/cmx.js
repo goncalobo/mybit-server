@@ -33,18 +33,22 @@ exports.getLocation = function (req, res) {
 
         result.on('end', function(result)
         {
-            console.log(data);
-
             if(data[0] === undefined)
-                res.send({
+                return res.send({
                     error:"User not found."
                 })
+
+            var wing;
+            if(parseFloat(data[0].mapCoordinate.x) < parseFloat(data[0].mapInfo.floorDimension.width)/2)
+                wing = "West"
+            else wing = "East"
 
             var info = {
                 "UserName" : data[0].userName,
                 "MacAddress" : data[0].macAddress,
                 //"LastActivity" : Date(Number(data[0].changedOn)).toString(),
                 "MapInfo" : data[0].mapInfo.mapHierarchyString,
+                "Wing" : wing,
                 "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
                 "Coordinates" : {
                     "x" : data[0].mapCoordinate.x,

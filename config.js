@@ -1,11 +1,11 @@
 module.exports = {
     sqlConfig : {
         name : "MYBITDB",
-        port : "3311",
+        port : "12345",
         server : "127.0.0.1",
         user : "sa",
         password : "Mybitdb_123",
-        database : "mybitdb"
+        database : "mybit"
     },
     activeDirectoryConfig : {
         url: 'ldap://dcldap.mch.moc.sgps',

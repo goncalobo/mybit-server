@@ -1,6 +1,5 @@
 var User = require('../models/user');
 var Session = require('../models/session');
-var sleep = require('sleep');
 var jwt = require('jsonwebtoken');
 
 var sql = require ('seriate');
@@ -38,8 +37,6 @@ exports.generateToken = function (req, res) {
                 error: "Username/password not sent."
             })
 
-
-    console.log('Authing user in AD with ' + username + '|' + password + '\n');
 
     AD.authenticate(username, password, function(err, auth) {
         if (err) {
