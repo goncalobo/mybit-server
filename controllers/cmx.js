@@ -49,6 +49,7 @@ exports.getLocation = function (req, res) {
                 //"LastActivity" : Date(Number(data[0].changedOn)).toString(),
                 "MapInfo" : data[0].mapInfo.mapHierarchyString,
                 "Wing" : wing,
+                "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
                 "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
                 "Coordinates" : {
                     "x" : data[0].mapCoordinate.x,

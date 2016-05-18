@@ -50,6 +50,12 @@ router.route('/CMX/GetLocation')
 router.route('/Booking/GetRooms')
     .get(bookingController.getRooms);
 
+router.route('/Booking/GetEWSRooms')
+    .get(bookingController.getEWSRooms);
+
+router.route('/Booking/TestEWS')
+    .get(bookingController.testEWS);
+
 // Dummy routes for testing purposes.
 router.route('/Dummy/GetLocation')
     .get(function (req, res) {

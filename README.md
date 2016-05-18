@@ -32,27 +32,9 @@ API Usage
 <b>GET:  </b>localhost:1337/API/
 </code>
 
-<hr>
+<h4>User Routes</h4>
+<code><b>GET:  </b>localhost:1337/API/User</code>
+<code><b>POST: </b>localhost:1337/API/User <br></code>
 
-<h4>Auth Routes</h4>
-<code><b>POST: </b>localhost:1337/API/Auth <br></code><br>
-<h5>Body Parameters:</h5>
-<code><b>STRING</b> username, <b>STRING</b> password        <i>(for Users)</i></code><br>
-<code><b>STRING</b> secret                                <i>(for Windows Service)</i></code>
-
-<hr>
-
-<h4>CMX Routes</h4>
-<code><b>GET:  </b>localhost:1337/API/CMX/GetLocation?username=<b>\<param\></b></code>
-
-<hr>
-
-<h4>Active Directory Routes</h4>
-<code><b>GET:  </b>localhost:1337/API/AD/GetAllUsers</code><br>
-<code><b>GET:  </b>localhost:1337/API/AD/GetTeams</code><br>
-<code><b>POST: </b>localhost:1337/API/AD/GetTeamMembers?team=<b>\<param\></b></code>
-
-<hr>
-
-<h4>Booking Routes</h4>
-<code><b>GET:  </b>localhost:1337/API/GetRooms</code>
+<h4>Dummy Routes</h4>
+<code><b>GET:  </b>localhost:1337/API/Dummy/GetLocation <br></code>
