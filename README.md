@@ -13,6 +13,7 @@ Dependencies
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
     "express": "~4.13.1",
+    "jsonwebtoken": "^6.2.0",
     "morgan": "~1.6.1",
     "seriate": "^0.6.1"
   }
@@ -22,7 +23,7 @@ Installation
 --------------
 
 ```sh
-node server.js
+node ./bin/www
 ```
 
 API Usage
@@ -37,7 +38,7 @@ API Usage
 <h4>Auth Routes</h4>
 <code><b>POST: </b>localhost:1337/API/Auth <br></code><br>
 <h5>Body Parameters:</h5>
-<code><b>STRING</b> username, <b>STRING</b> password        <i>(for Users)</i></code><br>
+<code><b>STRING</b> email, <b>STRING</b> password        <i>(for Users)</i></code><br>
 <code><b>STRING</b> secret                                <i>(for Windows Service)</i></code>
 
 <hr>
