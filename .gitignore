@@ -1,0 +1,6 @@
+nodemodules/
+/nodemodules
+/node_modules/*
+.idea/
+/.idea
+/.idea/*
