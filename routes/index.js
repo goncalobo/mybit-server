@@ -7,6 +7,7 @@ var userController = require('../controllers/user');
 var adController = require('../controllers/activedirectory');
 var cmxController = require('../controllers/cmx');
 var bookingController = require('../controllers/booking');
+var kpiController = require('../controllers/kpi');
 
 
 router.route('/')
@@ -50,11 +51,14 @@ router.route('/CMX/GetLocation')
 router.route('/Booking/GetRooms')
     .get(bookingController.getRooms);
 
+router.route('/KPI/GetTopRooms/:query')
+    .get(kpiController.getTopRooms);
+
+router.route('/Booking')
+    .get(bookingController.BookRoom);
+
 router.route('/Booking/GetEWSRooms')
     .get(bookingController.getEWSRooms);
-
-router.route('/Booking/TestEWS')
-    .get(bookingController.testEWS);
 
 // Dummy routes for testing purposes.
 router.route('/Dummy/GetLocation')

@@ -1,5 +1,4 @@
 var https = require("https");
-
 var cmxConfig = require('../config').cmxConfig;
 
 exports.getLocation = function (req, res) {
@@ -16,7 +15,6 @@ exports.getLocation = function (req, res) {
         }
     }
 
-    //Ter a certeza que foi passado um parametro username e verificar se existe na db
     if(req.query.username == undefined){
         res.json({message:'Please pass an username as parameter'});
     }
@@ -66,9 +64,8 @@ exports.getLocation = function (req, res) {
 
     req.on('error', function(e)
     {
-        res.json({message:'Can\'t connect to cisco cmx.'});
+        res.json({error:'Can\'t connect to cisco cmx.'});
     });
 
     req.end();
-
 }

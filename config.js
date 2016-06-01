@@ -5,7 +5,7 @@ module.exports = {
         server : "127.0.0.1",
         user : "sa",
         password : "Mybitdb_123",
-        database : "mybit"
+        database : "mybitdb"
     },
     activeDirectoryConfig : {
         url: 'ldap://dcldap.mch.moc.sgps',

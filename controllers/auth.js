@@ -1,5 +1,4 @@
 var User = require('../models/user');
-var Session = require('../models/session');
 var jwt = require('jsonwebtoken');
 
 var sql = require ('seriate');
@@ -10,15 +9,14 @@ var AD = new ActiveDirectory(ADConfig);
 
 exports.generateToken = function (req, res) {
 
-    const username = req.body.username;
-    const password = req.body.password;
+    console.log(req.body);
 
     var secret = req.body.secret;
 
-    if(secret != undefined){
+    if(secret !== undefined){
         if(secret === require('../config').secret){
             console.log('Authing service.\n');
-            var token = Session.createSession(username, secret);
+            var token = User.createSession("SkypeService", secret);
             return res.json({
                 success : true,
                 token : token
@@ -30,15 +28,19 @@ exports.generateToken = function (req, res) {
         })
     }
 
+    const email = req.body.email;
+    const password = req.body.password;
+
     secret = require('../config').secret;
 
-    if(username == undefined || password == undefined)
+    if(email === undefined || password === undefined || email.indexOf('@') < 0)
             return res.json({
-                error: "Username/password not sent."
+                error: "Email/password not sent."
             })
 
+    const username = email.substr(0,email.indexOf('@'));
 
-    AD.authenticate(username, password, function(err, auth) {
+    AD.authenticate(email, password, function(err, auth) {
         if (err) {
             console.log('ERROR: '+JSON.stringify(err));
 
@@ -49,15 +51,23 @@ exports.generateToken = function (req, res) {
             return;
         }
         if (auth) {
-            console.log('Authenticated!');
+            var token;
+            if(User.findUser(username)){
+                token = User.createSession(username, secret);
 
-            var token = Session.createSession(username, secret);
-            console.log('Username: '+ username + '\n');
-            return res.json({
-                success : true,
-                token : token
-            });
+                return res.json({
+                    success : true,
+                    token : token
+                });
 
+            } else {
+                User.insertUser(username, email);
+                token = User.createSession(username, secret);
+                return res.json({
+                    success : true,
+                    token : token
+                });
+            }
         }
         else {
             console.log('Authentication failed!');
@@ -115,7 +125,7 @@ exports.refreshToken = function (req, res) {
             console.dir(decoded);
 
             //Gerar novo token com nova data de expiracao
-            var tokenRefresh = Session.createSession(decoded.username, secret);
+            var tokenRefresh = User.createSession(decoded.username, secret);
             console.log('Username: '+ decoded.username + '\n');
             return res.json({
                 success : true,

@@ -1,42 +1,34 @@
+var jwt = require('jsonwebtoken');
 var sql = require('seriate');
+var sqlConfig = require('../config').sqlConfig;
 
-var findUser = function (username) {
-    //sql.execute(...);
-    return {
-        id: 0,
-        email: "user@sonae.pt",
-        fullname: "John Smith"
-    }
+exports.findUser = function (username) {
+    sql.execute( sqlConfig, {
+            query: "SELECT * FROM tblUser WHERE tblUser.Username = '" + username + "'"
+        }
+    ).then(function (results) {
+        if(results.length != 0)
+            return true;
+        else return false;
+    }, function (err) {
+        return false;
+    })
 }
 
-var insertUser = function(email) {/*
-    var token = '2L460fWm8XT1KUl1KK45b89rQANt7Bhs';
-    var expires = new Date();
-    return sql.execute( {
-        query: sql.fromFile('../sql/insertUser'),
-        params: {
-            email :{
-                type : sql.VARCHAR,
-                val: email
-            },
-            token : {
-                type : sql.VARCHAR,
-                val : token
-            },
-            expires: {
-                type : sql.DATETIME,
-                val : expires
-            }
+exports.insertUser = function(username, email) {
+    sql.execute( sqlConfig, {
+            query: "INSERT INTO tblUser (Username, Email, NotificationCounter) VALUES ('"+username+"', '"+email+"', '"+0+"')"
         }
-    } ).then( function( results ) {
-        console.log( results );
-    }, function( err ) {
-        console.log( "Something bad happened:", err );
-    } );
-*/
-};
+    ).then(function (results) {
+        return true;
+    }, function (err) {
+        return false;
+    })
+}
 
-module.exports = {
-    findUser: findUser,
-    insertUser: insertUser
+exports.createSession = function(username, secret) {
+    var token = jwt.sign({username : username}, secret, {
+        expiresIn: "12 days" // expires in 3*24 hours
+    });
+    return token;
 };
