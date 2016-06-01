@@ -94,9 +94,7 @@ exports.verifyToken = function (req, res, next) {
             if (err) {
                 return res.json({ success: false, message: 'Failed to authenticate token.' });
             } else {
-                console.log('\nSuccess');
                 req.decoded = decoded;
-                console.dir(decoded);
                 next();
             }
         });

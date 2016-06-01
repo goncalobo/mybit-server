@@ -57,8 +57,8 @@ router.route('/KPI/GetTopRooms/:query')
 router.route('/Booking')
     .get(bookingController.BookRoom);
 
-router.route('/Booking/GetEWSRooms')
-    .get(bookingController.getEWSRooms);
+router.route('/Booking/GetAvailability')
+    .post(bookingController.getAvailability);
 
 // Dummy routes for testing purposes.
 router.route('/Dummy/GetLocation')

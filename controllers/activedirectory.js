@@ -67,10 +67,9 @@ exports.getAllUsers = function (req, res) {
 
         if ((! users) || (users.length == 0)) console.log('No users found.');
         else {
-            console.log('findUsers: '+JSON.stringify(users));
             for (var user in users)
              if(users[user].dn.includes(ADConfig.usersOU))
-                 result.push({"ID":users[user].sAMAccountName,"Name":users[user].givenName})
+                 result.push({"ID":users[user].sAMAccountName,"Name":users[user].displayName})
             res.contentType('application/json');
             res.send(JSON.stringify(result));
         }

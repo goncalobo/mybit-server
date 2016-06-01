@@ -24,14 +24,47 @@ exports.BookRoom = function (req, res) {
     });
 }
 
-exports.getEWSRooms = function (req, res) {
-    res.send(exch);
-    exch.FindItems()
-        .then(function (response) {
-            res.send(response)
-        }, function (errors) {
-            res.send(errors)
-        })
+exports.getAvailability = function (req, res) {
+
+    const alias = req.body.room;
+    
+    const starttime = new ews.DateTime.Parse(req.body.date).TotalMilliSeconds;
+    const endtime   = starttime + 24*60*60*1000; //one day
+
+    var queryEWS = function (timeWindow, attendee) {
+        exch.GetUserAvailability(attendee, timeWindow, ews.AvailabilityData.FreeBusyAndSuggestions)
+            .then(function (availabilityResponse) {
+
+                var info = [];
+                var meetings = availabilityResponse.attendeesAvailability.responses[0].calendarEvents;
+
+                for(var m in meetings) {
+                    info.push("{'startTime':'"+meetings[m].startTime +
+                    "','endTime':'" + meetings[m].endTime +
+                    "','subject':'" + meetings[m].details.subject + "}");
+                }
+
+                return res.send(info);
+            }, function (errors) {
+                console.log(errors)
+            });
+    }
+
+    sql.execute(sqlConfig,{
+        query:"SELECT tblRoom.Email FROM tblRoom WHERE tblRoom.Alias ='" + alias + "'"
+    }).then(function (result) {
+        var timeWindow = new ews.TimeWindow(new ews.DateTime(starttime), new ews.DateTime(endtime));
+        var attendee =[ new ews.AttendeeInfo(result[0].Email)];
+        queryEWS(timeWindow, attendee);
+    },function (err) {
+        console.log(err);
+    })
+
+
+
+    //console.log(t1.getTime());
+
+
 }
 
 exports.getRooms = function (req, res) {
