@@ -20,5 +20,10 @@ module.exports = {
         port: 443,
         auth: 'Basic YWRtaW46Y2lzY28uY214'
     },
+    ewsConfig : {
+        email: 'feupuser01@parceiro.sonae.pt',
+        password: 'feup%01',
+        uri: 'https://outlook.office365.com/EWS/exchange.asmx'
+    },
     secret: 'mybitsecretkey'
 };
