@@ -6,7 +6,7 @@ var https = require("https");
 exports.getTopRooms = function(req, res) {
     if (req.params.query == "Booked") {
         sql.execute(sqlConfig, {
-            query: "SELECT TOP 5 Name, BookingCounter FROM tblRoom ORDER BY tblRoom.BookingCounter DESC"
+            query: "SELECT TOP 5 Name, TotalCounter FROM tblRoom ORDER BY tblRoom.TotalCounter DESC"
         })
             .then(function(result) {
                 return res.send(result)
@@ -16,7 +16,7 @@ exports.getTopRooms = function(req, res) {
     } else
     if (req.params.query == "Hours") {
         sql.execute(sqlConfig, {
-            query: "SELECT TOP 5 Name, BookingHours FROM tblRoom ORDER BY tblRoom.BookingHours DESC"
+            query: "SELECT TOP 5 Name, TotalHours FROM tblRoom ORDER BY tblRoom.TotalHours DESC"
         })
             .then(function(result) {
                 return res.send(result)
@@ -26,7 +26,7 @@ exports.getTopRooms = function(req, res) {
     } else
     if (req.params.query == "TotalDuration") {
         sql.execute(sqlConfig, {
-            query: "SELECT SUM(tblRoom.BookingHours) AS 'TotalDuration' FROM tblRoom WHERE tblRoom.BookingHours IS NOT NULL"
+            query: "SELECT SUM(tblRoom.TotalHours) AS 'TotalDuration' FROM tblRoom WHERE tblRoom.TotalHours IS NOT NULL"
         })
             .then(function(result) {
                 return res.send(result[0])
@@ -37,9 +37,9 @@ exports.getTopRooms = function(req, res) {
     if (req.params.query == "FormalVSInformal") {
         sql.execute(sqlConfig, {
             query: "SELECT " +
-            "(SELECT SUM(tblRoom.BookingCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 1 AND tblRoom.BookingCounter IS NOT NULL)" +
+            "(SELECT SUM(tblRoom.TotalCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 1 AND tblRoom.TotalCounter IS NOT NULL)" +
             "AS 'Formal', " +
-            "(SELECT SUM(tblRoom.BookingCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 0 AND tblRoom.BookingCounter IS NOT NULL)" +
+            "(SELECT SUM(tblRoom.TotalCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 0 AND tblRoom.TotalCounter IS NOT NULL)" +
             "AS 'Informal'"
         })
             .then(function(result) {

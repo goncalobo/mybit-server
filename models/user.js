@@ -1,5 +1,4 @@
 var jwt = require('jsonwebtoken');
-
 var sql = require('seriate');
 var sqlConfig = require('../config').sqlConfig;
 
@@ -11,8 +10,9 @@ exports.findUser = function (username, email, name) {
         if(results.length != 0)
             return;
         else {
+            var d = new Date();
             sql.execute( sqlConfig, {
-                    query: "INSERT INTO tblUser (Username, Email, Name, NotificationCounter) VALUES ('"+username+"', '"+email+"', '"+name+"', '"+0+"')"
+                    query: "INSERT INTO tblUser (Username, Email, Name, RegisterDate) VALUES ('"+username+"', '"+email+"', '"+name+"', '" + d.toISOString() + "')"
                 }
             ).then(function (results) {
                 console.log(results);

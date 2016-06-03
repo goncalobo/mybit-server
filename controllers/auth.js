@@ -102,7 +102,6 @@ exports.verifyToken = function (req, res, next) {
     }
 }
 
-
 exports.refreshToken = function (req, res) {
     //Verificar se o token é valido
     var token = req.headers['authorization'];
@@ -128,3 +127,12 @@ exports.refreshToken = function (req, res) {
     });
 
 }
+
+exports.getUser = function(req, res) {
+    console.log(req.decoded)
+    res.send({
+        "username": req.decoded.username,
+        "displayname": req.decoded.displayname,
+        "email": req.decoded.email
+    });
+};
