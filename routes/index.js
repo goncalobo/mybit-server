@@ -11,7 +11,7 @@ var kpiController = require('../controllers/kpi');
 
 
 router.route('/')
-    .get(function (req, res) {
+    .get(function(req, res) {
         res.json({
             message: "Successfully connected to mybit API."
         })
@@ -51,38 +51,43 @@ router.route('/CMX/GetLocation')
 router.route('/Booking/GetRooms')
     .get(bookingController.getRooms);
 
-router.route('/KPI/GetTopRooms/:query')
-    .get(kpiController.getTopRooms);
-
 router.route('/Booking')
     .get(bookingController.BookRoom);
 
 router.route('/Booking/GetAvailability')
     .post(bookingController.getAvailability);
 
+// KPI Routes
+router.route('/KPI/GetTopRooms/:query')
+    .get(kpiController.getTopRooms);
+
+router.route('/KPI/GetStats/:query/:time')
+    .get(kpiController.stats);
+
 // Dummy routes for testing purposes.
 router.route('/Dummy/GetLocation')
-    .get(function (req, res) {
+    .get(function(req, res) {
         res.json({
-            coordinates: {x: 0, y: 0},
+            coordinates: {
+                x: 0,
+                y: 0
+            },
             floor: 4,
             orientation: "West"
         })
     });
 
 
-exports.getJSON = function(options, onResult)
-{
+exports.getJSON = function(options, onResult) {
     console.log("rest::getJSON");
 
     var prot = options.port == 443 ? https : http;
-    var req = prot.request(options, function(res)
-    {
+    var req = prot.request(options, function(res) {
         var output = '';
         console.log(options.host + ':' + res.statusCode);
         res.setEncoding('utf8');
 
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             output += chunk;
         });
 
