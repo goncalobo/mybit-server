@@ -47,29 +47,26 @@ router.route('/AD/GetTeamMembers')
 router.route('/CMX/GetLocation')
     .get(cmxController.getLocation);
 
-// Booking Routes
-router.route('/Booking/GetRooms')
-    .get(bookingController.getRooms);
-
+// KPI
 router.route('/KPI/GetTopRooms/:query')
     .get(kpiController.getTopRooms);
 
+// Booking Routes
 router.route('/Booking')
-    .get(bookingController.BookRoom);
+    .post(bookingController.BookRoom);
+
+router.route('/Booking/GetRooms')
+    .get(bookingController.getRooms);
 
 router.route('/Booking/GetAvailability')
     .post(bookingController.getAvailability);
 
-// Dummy routes for testing purposes.
-router.route('/Dummy/GetLocation')
-    .get(function (req, res) {
-        res.json({
-            coordinates: {x: 0, y: 0},
-            floor: 4,
-            orientation: "West"
-        })
-    });
+router.route('/Booking/GetScheduledMeetings')
+    .post(bookingController.getScheduledMeetings);
 
+
+router.route('/Test')
+    .get(bookingController.testEWS);
 
 exports.getJSON = function(options, onResult)
 {

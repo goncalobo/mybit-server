@@ -42,7 +42,7 @@ exports.getTeamMembers = function (req, res) {
             console.log('Group: ' + groupName + ' not found.');
         else {
             for (var user in users)
-                    result.push({"ID":users[user].sAMAccountName,"Name":users[user].givenName})
+                    result.push({"ID":users[user].sAMAccountName,"Name":users[user].displayName})
             res.contentType('application/json');
             res.send(JSON.stringify(result));
         }

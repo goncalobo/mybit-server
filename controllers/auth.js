@@ -9,14 +9,12 @@ var AD = new ActiveDirectory(ADConfig);
 
 exports.generateToken = function (req, res) {
 
-    console.log(req.body);
-
     var secret = req.body.secret;
 
     if(secret !== undefined){
         if(secret === require('../config').secret){
             console.log('Authing service.\n');
-            var token = User.createSession("SkypeService", secret);
+            var token = User.createSession({service:"SkypeService"}, secret);
             return res.json({
                 success : true,
                 token : token
@@ -34,9 +32,9 @@ exports.generateToken = function (req, res) {
     secret = require('../config').secret;
 
     if(email === undefined || password === undefined || email.indexOf('@') < 0)
-            return res.json({
-                error: "Email/password not sent."
-            })
+        return res.json({
+            error: "Email/password not sent."
+        })
 
     const username = email.substr(0,email.indexOf('@'));
 
@@ -51,35 +49,32 @@ exports.generateToken = function (req, res) {
             return;
         }
         if (auth) {
-            var token;
-            if(User.findUser(username)){
-                token = User.createSession(username, secret);
+            AD.findUser(username, function(err, user) {
+                if (err) {
+                    console.log('ERROR: ' + JSON.stringify(err));
+                    return;
+                }
 
-                return res.json({
-                    success : true,
-                    token : token
-                });
+                if (!user) console.log('User: ' + username + ' not found.');
+                else {
+                    var name = user.displayName;
+                    User.findUser(username, email, name);
+                    var token = User.createSession({username: username, displayname: name, email:email}, secret);
 
-            } else {
-                User.insertUser(username, email);
-                token = User.createSession(username, secret);
-                return res.json({
-                    success : true,
-                    token : token
-                });
-            }
+                    return res.json({
+                        success: true,
+                        token: token
+                    });
+                }
+            });
         }
         else {
             console.log('Authentication failed!');
             res.json ({
                 success : false
             });
-            return;
         }
     });
-
-
-
 }
 
 exports.verifyToken = function (req, res, next) {
