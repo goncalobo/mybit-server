@@ -9,14 +9,12 @@ var cmxController = require('../controllers/cmx');
 var bookingController = require('../controllers/booking');
 var kpiController = require('../controllers/kpi');
 
-
 router.route('/')
-    .get(function (req, res) {
+    .get(function(req, res) {
         res.json({
             message: "Successfully connected to mybit API."
         })
     });
-
 
 //Session Routes
 router.route('/Auth')
@@ -47,10 +45,6 @@ router.route('/AD/GetTeamMembers')
 router.route('/CMX/GetLocation')
     .get(cmxController.getLocation);
 
-// KPI
-router.route('/KPI/GetTopRooms/:query')
-    .get(kpiController.getTopRooms);
-
 // Booking Routes
 router.route('/Booking')
     .post(bookingController.BookRoom);
@@ -65,21 +59,27 @@ router.route('/Booking/GetScheduledMeetings')
     .post(bookingController.getScheduledMeetings);
 
 
+// KPI
+router.route('/KPI/GetTopRooms/:query')
+    .get(kpiController.getTopRooms);
+
+router.route('/KPI/GetStats/:query/:time')
+    .get(kpiController.stats);
+
+
 router.route('/Test')
     .get(bookingController.testEWS);
 
-exports.getJSON = function(options, onResult)
-{
+exports.getJSON = function(options, onResult) {
     console.log("rest::getJSON");
 
     var prot = options.port == 443 ? https : http;
-    var req = prot.request(options, function(res)
-    {
+    var req = prot.request(options, function(res) {
         var output = '';
         console.log(options.host + ':' + res.statusCode);
         res.setEncoding('utf8');
 
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             output += chunk;
         });
 
