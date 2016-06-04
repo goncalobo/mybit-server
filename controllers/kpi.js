@@ -1,9 +1,10 @@
 var sql = require('seriate');
+var scheduler = require('node-schedule');
 var sqlConfig = require('../config').sqlConfig;
 var cmxConfig = require('../config').cmxConfig;
 var https = require("https");
 
-exports.getTopRooms = function(req, res) {
+exports.roomStats = function(req, res) {
     if (req.params.query == "Booked") {
         sql.execute(sqlConfig, {
             query: "SELECT TOP 5 Name, TotalCounter FROM tblRoom ORDER BY tblRoom.TotalCounter DESC"
@@ -53,7 +54,48 @@ exports.getTopRooms = function(req, res) {
         })
 }
 
-exports.stats = function(req, res) {
+exports.applicationStats = function(req, res) {
+    if (req.params.query == "Users") {
+        var curr = new Date, firstday, lastday;
+        if (req.params.period == "Weekly") {
+            firstday = new Date(curr.setDate(curr.getDate() - curr.getDay())).toISOString();
+            lastday = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6)).toISOString();
+            sql.execute(sqlConfig, {query: "SELECT COUNT(*) AS 'WeeklyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"})
+                .then(function (result) {
+                    return res.send(result[0])
+                })
+        }
+        if (req.params.period == "Monthly") {
+            firstday = new Date(curr.getFullYear(), curr.getMonth(), 1).toISOString();
+            lastday = new Date(curr.getFullYear(), curr.getMonth() + 1, 0).toISOString();
+            sql.execute(sqlConfig, {query: "SELECT COUNT(*) AS 'MonthtlyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"})
+                .then(function (result) {
+                    return res.send(result[0])
+                })
+        }
+    } else
+    if (req.params.query == "Rooms") {
+        if(req.params.period == "Weekly")
+            sql.execute(sqlConfig, { query: "SELECT SUM(tblRoom.WeeklyCounter) AS 'WeeklyCounter' FROM tblRoom WHERE tblRoom.WeeklyCounter IS NOT NULL" })
+                .then(function(result) {return res.send(result[0])})
+        if(req.params.period == "Monthly")
+            sql.execute(sqlConfig, { query: "SELECT SUM(tblRoom.MonthlyCounter) AS 'MonthlyCounter' FROM tblRoom WHERE tblRoom.MonthlyCounter IS NOT NULL" })
+                .then(function(result) {return res.send(result[0])})
+    } else
+    if (req.params.query == "Notifications") {
+        if(req.params.period == "Weekly")
+            sql.execute(sqlConfig, { query: "SELECT SUM(tblUser.WeeklyNotifications) AS 'WeeklyNotifications' FROM tblUser WHERE tblUser.WeeklyNotifications IS NOT NULL" })
+                .then(function(result) {return res.send(result[0])})
+        if(req.params.period == "Monthly")
+            sql.execute(sqlConfig, { query: "SELECT SUM(tblUser.MonthlyNotifications) AS 'MonthlyNotifications' FROM tblUser WHERE tblUser.MonthlyNotifications IS NOT NULL" })
+                .then(function(result) {return res.send(result[0])})
+    } else
+        res.send({
+            error: "Wrong query."
+        })
+}
+
+exports.inflowStats = function(req, res) {
     if (req.params.query == "Building" && req.params.time == "Now") {
         var options = {
             host: cmxConfig.host,
@@ -247,6 +289,22 @@ exports.stats = function(req, res) {
         });
 
 }
+
+var monthlyRule = new scheduler.RecurrenceRule();
+monthlyRule.dayOfMonth = [0];
+monthlyRule.hour   = 0;
+monthlyRule.minute = 0;
+scheduler.scheduleJob(monthlyRule, function(){
+    sql.execute(sqlConfig, { query:"UPDATE tblRoom SET tblRoom.MonthlyCounter = 0 FROM tblRoom" })
+});
+
+var weeklyRule = new scheduler.RecurrenceRule();
+weeklyRule.dayOfWeek = [1];
+weeklyRule.hour   = 0;
+weeklyRule.minute = 0;
+scheduler.scheduleJob(weeklyRule, function(){
+    sql.execute(sqlConfig, { query:"UPDATE tblRoom SET tblRoom.WeeklyCounter = 0 FROM tblRoom" })
+});
 
 function getWeek(interval) {
     var beforeOneWeek = new Date(new Date().getTime() - 60 * 60 * 24 * 7 * interval * 1000);

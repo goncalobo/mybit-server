@@ -1,6 +1,6 @@
 var android = require('node-gcm');
 var apple = require('apn');
-
+var scheduler = require('node-schedule');
 var sql = require('seriate');
 var sqlConfig = require('../config').sqlConfig;
 
@@ -42,3 +42,19 @@ var updateCounter = function (user) {
                 "UPDATE tblUser SET tblUser.MonthlyNotifications = @a, @a=@a+1 WHERE tblUser.Username = '" + user + "'"
             })})});
 }
+
+var monthlyRule = new scheduler.RecurrenceRule();
+monthlyRule.dayOfMonth = [0];
+monthlyRule.hour   = 0;
+monthlyRule.minute = 0;
+scheduler.scheduleJob(monthlyRule, function(){
+    sql.execute(sqlConfig, { query:"UPDATE tblUser SET tblUser.MonthlyNotifications = 0 FROM tblUser" })
+});
+
+var weeklyRule = new scheduler.RecurrenceRule();
+weeklyRule.dayOfWeek = [1];
+weeklyRule.hour   = 0;
+weeklyRule.minute = 0;
+scheduler.scheduleJob(weeklyRule, function(){
+    sql.execute(sqlConfig, { query:"UPDATE tblUser SET tblUser.WeeklyNotifications = 0 FROM tblUser" })
+});

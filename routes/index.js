@@ -48,10 +48,12 @@ router.route('/Booking/GetScheduledMeetings')
     .post(bookingController.getScheduledMeetings);
 
 // KPI
-router.route('/KPI/GetTopRooms/:query')
-    .get(kpiController.getTopRooms);
-router.route('/KPI/GetStats/:query/:time')
-    .get(kpiController.stats);
+router.route('/KPI/GetRoomStats/:query')
+    .get(kpiController.roomStats);
+router.route('/KPI/GetAppStats/:query/:period')
+    .get(kpiController.applicationStats);
+router.route('/KPI/GetInflowStats/:query/:time')
+    .get(kpiController.inflowStats);
 
 // Notifications
 router.route('/Notify')

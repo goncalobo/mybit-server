@@ -16,6 +16,7 @@
     "jsonwebtoken": "^6.2.0",
     "morgan": "~1.6.1",
     "node-gcm": "^0.14.2",
+    "node-schedule": "^1.1.0",
     "seriate": "^0.6.1"
   },
   "main": "server.js",

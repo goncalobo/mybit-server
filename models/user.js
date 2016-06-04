@@ -3,16 +3,19 @@ var sql = require('seriate');
 var sqlConfig = require('../config').sqlConfig;
 
 exports.findUser = function (username, email, name) {
+
+    var d = new Date();
+
     sql.execute( sqlConfig, {
             query: "SELECT * FROM tblUser WHERE tblUser.Username = '" + username + "'"
         }
     ).then(function (results) {
-        if(results.length != 0)
-            return;
+        if (results.length != 0) {
+            sql.execute(sqlConfig, {query: "UPDATE tblUser SET tblUser.LastActivity = '"+d.toISOString()+"' FROM tblRoom"}); return;
+        }
         else {
-            var d = new Date();
             sql.execute( sqlConfig, {
-                    query: "INSERT INTO tblUser (Username, Email, Name, RegisterDate) VALUES ('"+username+"', '"+email+"', '"+name+"', '" + d.toISOString() + "')"
+                    query: "INSERT INTO tblUser (Username, Email, Name, LastActivity) VALUES ('"+username+"', '"+email+"', '"+name+"', '" + d.toISOString() + "')"
                 }
             ).then(function (results) {
                 console.log(results);
