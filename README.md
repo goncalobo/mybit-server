@@ -48,7 +48,7 @@ API Usage
 ```json
 {
   "success": true,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXJ2aWNlIjoiU2t5cGVTZXJ2aWNlIiwiaWF0IjoxNDY1Mjk2MDQ1LCJleHAiOjE0NjYzMzI4NDV9.EOt5q4F-2ckwuVwJSSXes2W0joOQfEkYf7rinbb_9Jo"
+  "token": "secret_token"
 }
 ```
 
@@ -310,20 +310,106 @@ Formal vs Informal
 <code><b>STRING</b> start, <b>STRING</b> timestamp (iso format)</code><br>
 <code><b>STRING</b> attendees, <b>STRING</b> ["array"] </code><br>
 
+```json
+On success:
+{
+  "success": "Room booked.",
+  "start": "2016-06-08T11:30:00.000Z",
+  "end": "2016-06-08T12:30:00.000Z",
+  "location": "HeartBIT Room 1E3 F04Pax",
+  "subject": "BORDALO Joao (parceiro)",
+  "duration": 1
+}
+
+On overlap:
+{
+  "error": "Scheduled meetings overlaps existing meetings."
+}
+```
+
 <h5>Rooms Availability</h5>
 <code><b>POST:  </b>localhost:1337/API/Booking/GetAvailability</code><br>
 <h6>Body Parameters:</h6>
 <code><b>STRING</b> room, <b>STRING</b> room alias</code><br>
 <code><b>STRING</b> date, <b>STRING</b> Date YYYY-MM-DD</code><br>
+```json
+[
+  [
+    "09:00",
+    "10:00"
+  ],
+  [
+    "12:30",
+    "13:30"
+  ],
+  [
+    "13:00",
+    "14:00"
+  ]
+]
+```
 
 <h5>Scheduled Meetings</h5>
 <code><b>POST:  </b>localhost:1337/API/Booking/GetScheduledMeetings</code><br>
 <h6>Body Parameters:</h6>
 <code><b>STRING</b> room, <b>STRING</b> room alias</code><br>
 <code><b>STRING</b> months, <b>INT</b> number of months</code><br>
+```json
+[
+  {
+    "startTime": "2016-06-01T07:00:00.000Z",
+    "endTime": "2016-06-01T08:00:00.000Z",
+    "subject": "MAGALHAES Daniela Sofia"
+  },
+  {
+    "startTime": "2016-06-01T09:00:00.000Z",
+    "endTime": "2016-06-01T09:30:00.000Z",
+    "subject": "SANTOS Sofia Andrade (parceiro)"
+  },
+  ...
+]
+```
 
 <h5>Get Rooms</h5>
 <code><b>GET:  </b>localhost:1337/API/Booking/GetRooms</code><br>
-
-router.route('/Booking')
-    .post(bookingController.BookRoom);
+```json
+[
+  {
+    "ID": 1,
+    "Name": "HeartBIT Room 1E1 F12Pax VC",
+    "Alias": "heartbitroom1e1",
+    "Email": "heartbitroom1e1@sonae.pt",
+    "Floor": 1,
+    "Wing": "East",
+    "Formal": true,
+    "Capacity": 12,
+    "LCD": true,
+    "Projector": false,
+    "Video": true,
+    "Sound": false,
+    "TotalCounter": 0,
+    "TotalHours": 0,
+    "WeeklyCounter": 0,
+    "MonthlyCounter": 0
+  },
+  {
+    "ID": 2,
+    "Name": "HeartBIT Room 1E2 I15Pax",
+    "Alias": "heartbitroom1E2",
+    "Email": "heartbitroom1E2@sonae.pt",
+    "Floor": 1,
+    "Wing": "East",
+    "Formal": false,
+    "Capacity": 15,
+    "LCD": false,
+    "Projector": false,
+    "Video": false,
+    "Sound": false,
+    "TotalCounter": 0,
+    "TotalHours": 0,
+    "WeeklyCounter": 0,
+    "MonthlyCounter": 0
+  },
+  ...
+]
+```
