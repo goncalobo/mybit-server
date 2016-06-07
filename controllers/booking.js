@@ -10,8 +10,6 @@ exch.Url = new ews.Uri (ewsConfig.uri);
 
 exports.BookRoom = function (req, res) {
 
-    console.log(req.body);
-
     const alias = req.body.room;
     const startTime = new ews.DateTime.Parse(req.body.start).TotalMilliSeconds;
     const endTime   = startTime + 60*60*1000; // 1 hour
@@ -141,13 +139,13 @@ exports.getScheduledMeetings = function (req, res) {
 exports.getAvailability = function (req, res) {
 
     const alias = req.body.room;
-    const startTime = new ews.DateTime.Parse(req.body.date).TotalMilliSeconds;
+    const startTime = new ews.DateTime.Parse(new Date(req.body.date)).TotalMilliSeconds;
+
     const endTime   = startTime + 24*60*60*1000; //one day
 
     var queryEWS = function (room, timeWindow) {
-        exch.GetUserAvailability(room, timeWindow, ews.AvailabilityData.FreeBusyAndSuggestions)
+        exch.GetUserAvailability(room, timeWindow, ews.AvailabilityData.FreeBusy)
             .then(function (availabilityResponse) {
-                console.log(availabilityResponse.attendeesAvailability.responses[0].calendarEvents);
 
                 var info = [];
                 var result = SCHEDULE;
@@ -164,10 +162,11 @@ exports.getAvailability = function (req, res) {
                     var r = -1;
                     while(r < result.length-1){
                         r++;
-                        if ((formatTime(info[i].startTime) < result[r][1]) && (formatTime(info[i].endTime) > result[r][0])) {
-                            result.splice(r, 1);
-                            r = -1;
-                        }
+                        //console.log("\n>\n"+ (info[i].startTime).toString() + " - " + (info[i].endTime).toString() + "\n" + result[r][0] + " - " + result[r][1] + "\n\n");
+                        if ((formatTime(info[i].startTime) < result[r][1]) && (formatTime(info[i].endTime) > result[r][0]))
+                        {result.splice(r, 1); r = -1;}
+                        //console.log(result)
+                        //console.log(r + " " + result.length)
                     }
                 }
 
