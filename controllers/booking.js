@@ -10,6 +10,8 @@ exch.Url = new ews.Uri (ewsConfig.uri);
 
 exports.BookRoom = function (req, res) {
 
+    console.log(req.body);
+
     const alias = req.body.room;
     const startTime = new ews.DateTime.Parse(req.body.start).TotalMilliSeconds;
     const endTime   = startTime + 60*60*1000; // 1 hour
@@ -61,8 +63,8 @@ exports.BookRoom = function (req, res) {
                 }
 
                 for (var i in info) {
-                    if ((info[i].startTime <= appointment.End.momentDate)
-                        && (info[i].endTime >= appointment.Start.momentDate))
+                    if ((info[i].startTime < appointment.End.momentDate)
+                        && (info[i].endTime > appointment.Start.momentDate))
                         return res.send({error: "Scheduled meetings overlaps existing meetings."});
                 }
 
@@ -145,6 +147,7 @@ exports.getAvailability = function (req, res) {
     var queryEWS = function (room, timeWindow) {
         exch.GetUserAvailability(room, timeWindow, ews.AvailabilityData.FreeBusyAndSuggestions)
             .then(function (availabilityResponse) {
+                console.log(availabilityResponse.attendeesAvailability.responses[0].calendarEvents);
 
                 var info = [];
                 var result = SCHEDULE;
@@ -157,10 +160,17 @@ exports.getAvailability = function (req, res) {
                     });
                 }
 
-                for(var r in result)
-                    for(var i in info)
-                        if((formatTime(info[i].startTime) <= result[r][1]) && (formatTime(info[i].endTime) >= result[r][0]))
+                for (var i in info) {
+                    var r = -1;
+                    while(r < result.length-1){
+                        r++;
+                        if ((formatTime(info[i].startTime) < result[r][1]) && (formatTime(info[i].endTime) > result[r][0])) {
                             result.splice(r, 1);
+                            r = -1;
+                        }
+                    }
+                }
+
 
                 return res.send(result);
 

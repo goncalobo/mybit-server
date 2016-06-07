@@ -11,7 +11,7 @@ exports.findUser = function (username, email, name) {
         }
     ).then(function (results) {
         if (results.length != 0) {
-            sql.execute(sqlConfig, {query: "UPDATE tblUser SET tblUser.LastActivity = '"+d.toISOString()+"' FROM tblRoom"}); return;
+            sql.execute(sqlConfig, {query: "UPDATE tblUser SET tblUser.LastActivity = '"+d.toISOString()+"' FROM tblUser WHERE tblUser.Username='"+username+"'"}); return;
         }
         else {
             sql.execute( sqlConfig, {

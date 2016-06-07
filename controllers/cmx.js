@@ -23,15 +23,12 @@ exports.getLocation = function (req, res) {
 
     var data;
 
-    req = https.request(options, function(result) {
+    var noMCH = https.request(options, function(result) {
         result.setEncoding('utf8');
         result.on('data', function (chunk)
         {
             data = JSON.parse(chunk);
-        });
 
-        result.on('end', function(result)
-        {
             if(data[0] === undefined)
                 return;
             else{
@@ -43,7 +40,6 @@ exports.getLocation = function (req, res) {
                 var info = {
                     "UserName" : username,
                     "MacAddress" : data[0].macAddress,
-                    //"LastActivity" : Date(Number(data[0].changedOn)).toString(),
                     "MapInfo" : data[0].mapInfo.mapHierarchyString,
                     "Wing" : wing,
                     "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
@@ -57,56 +53,69 @@ exports.getLocation = function (req, res) {
                         "width": data[0].mapInfo.floorDimension.width
                     }
                 };
-                res.send(info);
+                return res.send(info);
             }
-        });
-    });
-
-    options.path = '/api/location/v2/clients?username=MCH\\\\'+username;
-
-    req = https.request(options, function(result) {
-        result.setEncoding('utf8');
-        result.on('data', function (chunk)
-        {
-            data = JSON.parse(chunk);
         });
 
         result.on('end', function(result)
-        {
-            if(data[0] === undefined)
-                return res.send({ error:"User not found." })
-            else{
-                var wing;
-                if(parseFloat(data[0].mapCoordinate.x) < parseFloat(data[0].mapInfo.floorDimension.width)/2)
-                    wing = "West"
-                else wing = "East"
+        {    options.path = '/api/location/v2/clients?username=MCH\\\\'+username;
 
-                var info = {
-                    "UserName" : username,
-                    "MacAddress" : data[0].macAddress,
-                    //"LastActivity" : Date(Number(data[0].changedOn)).toString(),
-                    "MapInfo" : data[0].mapInfo.mapHierarchyString,
-                    "Wing" : wing,
-                    "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
-                    "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
-                    "Coordinates" : {
-                        "x" : data[0].mapCoordinate.x,
-                        "y" : data[0].mapCoordinate.y
-                    },
-                    "FloorInfo" : {
-                        "length": data[0].mapInfo.floorDimension.length,
-                        "width": data[0].mapInfo.floorDimension.width
+            var withMCH = https.request(options, function(result) {
+                result.setEncoding('utf8');
+                result.on('data', function (chunk)
+                {
+                    data = JSON.parse(chunk);
+
+                    if(data[0] === undefined)
+                        return;
+                    else{
+                        var wing;
+                        if(parseFloat(data[0].mapCoordinate.x) < parseFloat(data[0].mapInfo.floorDimension.width)/2)
+                            wing = "West"
+                        else wing = "East"
+
+                        var info = {
+                            "UserName" : username,
+                            "MacAddress" : data[0].macAddress,
+                            "MapInfo" : data[0].mapInfo.mapHierarchyString,
+                            "Wing" : wing,
+                            "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
+                            "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
+                            "Coordinates" : {
+                                "x" : data[0].mapCoordinate.x,
+                                "y" : data[0].mapCoordinate.y
+                            },
+                            "FloorInfo" : {
+                                "length": data[0].mapInfo.floorDimension.length,
+                                "width": data[0].mapInfo.floorDimension.width
+                            }
+                        };
+                        return res.send(info);
                     }
-                };
-                res.send(info);
-            }
+                });
+
+                result.on('end', function(result)
+                {
+                    if(!res.headersSent && data !== undefined)
+                        res.send({error:"User not found."})
+                });
+            });
+
+            withMCH.on('error', function(e)
+            {
+                res.json({error:'Can\'t connect to cisco cmx.'});
+            });
+
+            withMCH.end();
+
+
         });
     });
 
-    req.on('error', function(e)
+    noMCH.on('error', function(e)
     {
         res.json({error:'Can\'t connect to cisco cmx.'});
     });
 
-    req.end();
+    noMCH.end();
 }
