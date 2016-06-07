@@ -61,8 +61,6 @@ API Usage
 <code><b>POST: </b>localhost:1337/API/AD/GetTeamMembers?team=<b>\<param\></b></code>
 
 <hr>
-
-<hr>
 <h4>KPI</h4>
 <h5>InFlow Stats</h5>
 <code><b>GET:  </b>localhost:1337/API/KPI/GetInflowStats/:Place/:Time</b></code><br>
@@ -81,17 +79,27 @@ API Usage
 <hr>
 
 <h4>Booking Routes</h4>
+<h5>Booking</h5>
 <code><b>POST: </b>localhost:1337/API/Booking <br></code><br>
 <h6>Body Parameters:</h6>
 <code><b>STRING</b> room, <b>STRING</b> room alias</code><br>
 <code><b>STRING</b> start, <b>STRING</b> timestamp (iso format)</code><br>
 <code><b>STRING</b> attendees, <b>STRING</b> ["array"] </code><br>
 
+<h5>Rooms Availability</h5>
+<code><b>POST:  </b>localhost:1337/API/Booking/GetAvailability</code><br>
+<h6>Body Parameters:</h6>
+<code><b>STRING</b> room, <b>STRING</b> room alias</code><br>
+<code><b>STRING</b> date, <b>STRING</b> Date YYYY-MM-DD</code><br>
+
+<h5>Scheduled Meetings</h5>
+<code><b>POST:  </b>localhost:1337/API/Booking/GetScheduledMeetings</code><br>
+<h6>Body Parameters:</h6>
+<code><b>STRING</b> room, <b>STRING</b> room alias</code><br>
+<code><b>STRING</b> months, <b>INT</b> number of months</code><br>
+
+<h5>Get Rooms</h5>
 <code><b>GET:  </b>localhost:1337/API/Booking/GetRooms</code><br>
-<code><b>GET:  </b>localhost:1337/API/Booking/GetAvailability</code><br>
-<code><b>GET:  </b>localhost:1337/API/Booking/GetScheduledMeetings</code><br>
-
-
 
 router.route('/Booking')
     .post(bookingController.BookRoom);
