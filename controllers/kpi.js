@@ -156,7 +156,7 @@ exports.inflowStats = function(req, res) {
 
         req.end();
     } else if (req.params.query == "Building" && req.params.time == "History") {
-        var history = {};
+        var history = [];
         getBuildingHistoryStats(res, history, 1);
     } else
     if (req.params.query == "Floor" && req.params.time == "Now") {
@@ -200,7 +200,7 @@ exports.inflowStats = function(req, res) {
 
         req.end();
     } else if (req.params.query == "Floor" && req.params.time == "History") {
-        var history = {};
+        var history = [];
         getFloorHistoryStats(res, history, 1);
     } else
         res.send({
@@ -233,13 +233,14 @@ function getBuildingHistoryStats(res, history, count) {
 
         result.on('end', function(result) {
             var info = {
+            	"Week": count,
                 "Start": timeInterval[0].getFullYear() + '-' + (timeInterval[0].getMonth() + 1) + '-' + timeInterval[0].getDate(),
                 "End": timeInterval[1].getFullYear() + '-' + (timeInterval[1].getMonth() + 1) + '-' + timeInterval[1].getDate(),
                 "TotalVisitors": data.value.primary.value,
                 "RepeatVisitors": data.value.primary.breakdown[0].value,
                 "NewVisitors": data.value.primary.breakdown[1].value
             }
-            history["Week" + count] = info;
+            history.push(info);
             count++;
             if (count == 5)
                 res.send(history);
@@ -272,8 +273,6 @@ function getFloorHistoryStats(res, history, count) {
         }
     }
 
-    console.log(options);
-
     var data;
     req = https.request(options, function(result) {
 
@@ -283,8 +282,8 @@ function getFloorHistoryStats(res, history, count) {
         });
 
         result.on('end', function(result) {
-            console.log(data);
             var info = {
+            	"Week": count,
                 "Start": timeInterval[0].getFullYear() + '-' + (timeInterval[0].getMonth() + 1) + '-' + timeInterval[0].getDate(),
                 "End": timeInterval[1].getFullYear() + '-' + (timeInterval[1].getMonth() + 1) + '-' + timeInterval[1].getDate(),
                 "Piso1TotalVisitors": data.results[0].data[0].value,
@@ -294,7 +293,7 @@ function getFloorHistoryStats(res, history, count) {
                 "Piso5TotalVisitors": data.results[4].data[0].value
             }
 
-            history["Week" + count] = info;
+            history.push(info);
             count++;
             if (count == 5)
                 res.send(history);
