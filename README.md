@@ -122,28 +122,32 @@ API Usage
 
 Building History
 {
-    "Week1": {
+    {
+        "Week": 1,
         "Start": "2016-5-30",
         "End": "2016-6-5",
         "TotalVisitors": 0,
         "RepeatVisitors": 0,
         "NewVisitors": 0
     },
-    "Week2": {
+    {
+        "Week": 2,
         "Start": "2016-5-23",
         "End": "2016-5-29",
         "TotalVisitors": 1032,
         "RepeatVisitors": 861,
         "NewVisitors": 171
     },
-    "Week3": {
+    {
+        "Week": 3,
         "Start": "2016-5-16",
         "End": "2016-5-22",
         "TotalVisitors": 12067,
         "RepeatVisitors": 9366,
         "NewVisitors": 2701
     },
-    "Week4": {
+    {
+        "Week": 4,
         "Start": "2016-5-9",
         "End": "2016-5-15",
         "TotalVisitors": 10615,
