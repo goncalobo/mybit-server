@@ -201,7 +201,7 @@ exports.inflowStats = function(req, res) {
         req.end();
     } else if (req.params.query == "Floor" && req.params.time == "History") {
         var history = {};
-        getFloorStats(res, history, 1);
+        getFloorHistoryStats(res, history, 1);
     } else
         res.send({
             error: "Wrong query. (Building/[Now | History] | Floor[Now | History])"
@@ -299,7 +299,7 @@ function getFloorHistoryStats(res, history, count) {
             if (count == 5)
                 res.send(history);
             else
-                getFloorStats(res, history, count);
+                getFloorHistoryStats(res, history, count);
         });
     });
 
