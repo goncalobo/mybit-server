@@ -121,7 +121,7 @@ API Usage
 }
 
 Building History
-{
+[
     {
         "Week": 1,
         "Start": "2016-5-30",
@@ -154,7 +154,7 @@ Building History
         "RepeatVisitors": 8314,
         "NewVisitors": 2301
     }
-}
+]
 
 Floors Now
 {
