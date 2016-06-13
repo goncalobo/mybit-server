@@ -167,7 +167,8 @@ Floors Now
 
 Floors History
 {
-    "Week1": {
+    {
+        "Week": 1,
         "Start": "2016-5-30",
         "End": "2016-6-5",
         "Piso1TotalVisitors": 0,
@@ -176,7 +177,8 @@ Floors History
         "Piso4TotalVisitors": 0,
         "Piso5TotalVisitors": 0
     },
-    "Week2": {
+    {
+        "Week": 2, 
         "Start": "2016-5-23",
         "End": "2016-5-29",
         "Piso1TotalVisitors": 572,
@@ -185,7 +187,8 @@ Floors History
         "Piso4TotalVisitors": 407,
         "Piso5TotalVisitors": 63
     },
-    "Week3": {
+    {
+        "Week": 3,
         "Start": "2016-5-16",
         "End": "2016-5-22",
         "Piso1TotalVisitors": 5587,
@@ -194,7 +197,8 @@ Floors History
         "Piso4TotalVisitors": 4013,
         "Piso5TotalVisitors": 3228
     },
-    "Week4": {
+    {
+        "Week": 4,
         "Start": "2016-5-9",
         "End": "2016-5-15",
         "Piso1TotalVisitors": 4972,
