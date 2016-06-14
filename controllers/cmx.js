@@ -18,7 +18,7 @@ exports.getLocation = function (req, res) {
     }
 
     if(req.query.username == undefined){
-        res.json({message:'Please pass an username as parameter'});
+        return res.json({message:'Please pass an username as parameter'});
     }
 
     var data;
@@ -37,28 +37,29 @@ exports.getLocation = function (req, res) {
                     wing = "West"
                 else wing = "East"
 
-                var info = {
-                    "UserName" : username,
-                    "MacAddress" : data[0].macAddress,
-                    "MapInfo" : data[0].mapInfo.mapHierarchyString,
-                    "Wing" : wing,
-                    "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
-                    "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
-                    "Coordinates" : {
-                        "x" : data[0].mapCoordinate.x,
-                        "y" : data[0].mapCoordinate.y
-                    },
-                    "FloorInfo" : {
-                        "length": data[0].mapInfo.floorDimension.length,
-                        "width": data[0].mapInfo.floorDimension.width
-                    }
-                };
-                return res.send(info);
-            }
-        });
+                    var info = {
+                        "UserName" : username,
+                        "MacAddress" : data[0].macAddress,
+                        "MapInfo" : data[0].mapInfo.mapHierarchyString,
+                        "Wing" : wing,
+                        "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
+                        "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
+                        "Coordinates" : {
+                            "x" : data[0].mapCoordinate.x,
+                            "y" : data[0].mapCoordinate.y
+                        },
+                        "FloorInfo" : {
+                            "length": data[0].mapInfo.floorDimension.length,
+                            "width": data[0].mapInfo.floorDimension.width
+                        }
+                    };
+                    if(!res.headersSent)
+                        return res.send(info);
+                }
+            });
 
         result.on('end', function(result)
-        {    options.path = '/api/location/v2/clients?username=MCH\\\\'+username;
+            {    options.path = '/api/location/v2/clients?username=MCH\\\\'+username;
 
             var withMCH = https.request(options, function(result) {
                 result.setEncoding('utf8');
@@ -74,36 +75,37 @@ exports.getLocation = function (req, res) {
                             wing = "West"
                         else wing = "East"
 
-                        var info = {
-                            "UserName" : username,
-                            "MacAddress" : data[0].macAddress,
-                            "MapInfo" : data[0].mapInfo.mapHierarchyString,
-                            "Wing" : wing,
-                            "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
-                            "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
-                            "Coordinates" : {
-                                "x" : data[0].mapCoordinate.x,
-                                "y" : data[0].mapCoordinate.y
-                            },
-                            "FloorInfo" : {
-                                "length": data[0].mapInfo.floorDimension.length,
-                                "width": data[0].mapInfo.floorDimension.width
-                            }
-                        };
-                        return res.send(info);
-                    }
-                });
+                            var info = {
+                                "UserName" : username,
+                                "MacAddress" : data[0].macAddress,
+                                "MapInfo" : data[0].mapInfo.mapHierarchyString,
+                                "Wing" : wing,
+                                "CurrentLocation" : data[0].mapInfo.mapHierarchyString.replace("Portugal>EstruturaCentral-","") + " - " + wing,
+                                "MapImage" : "/images/floors/" + data[0].mapInfo.image.imageName,
+                                "Coordinates" : {
+                                    "x" : data[0].mapCoordinate.x,
+                                    "y" : data[0].mapCoordinate.y
+                                },
+                                "FloorInfo" : {
+                                    "length": data[0].mapInfo.floorDimension.length,
+                                    "width": data[0].mapInfo.floorDimension.width
+                                }
+                            };
+                            if(!res.headersSent)
+                               return res.send(info);
+                       }
+                   });
 
                 result.on('end', function(result)
                 {
                     if(!res.headersSent && data !== undefined)
-                        res.send({error:"User not found."})
+                        return res.send({error:"User not found."})
                 });
             });
 
             withMCH.on('error', function(e)
             {
-                res.json({error:'Can\'t connect to cisco cmx.'});
+                return res.json({error:'Can\'t connect to cisco cmx.'});
             });
 
             withMCH.end();
@@ -114,7 +116,7 @@ exports.getLocation = function (req, res) {
 
     noMCH.on('error', function(e)
     {
-        res.json({error:'Can\'t connect to cisco cmx.'});
+        return res.json({error:'Can\'t connect to cisco cmx.'});
     });
 
     noMCH.end();
