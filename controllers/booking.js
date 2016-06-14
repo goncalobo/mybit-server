@@ -171,7 +171,7 @@ exports.getAvailability = function (req, res) {
                 }
 
 
-                return res.send(result);
+                return res.send({suggestions:result});
 
             }, function (errors) {
                 console.log(errors)
