@@ -32,6 +32,9 @@ exports.getLocation = function (req, res) {
             if(data[0] === undefined)
                 return;
             else{
+                if(!data[0].mapInfo.mapHierarchyString.includes("HeartBit"))
+                    if(!res.headersSent)
+                        return res.send({error:"User outside Hearbit building."});
                 var wing;
                 if(parseFloat(data[0].mapCoordinate.x) < parseFloat(data[0].mapInfo.floorDimension.width)/2)
                     wing = "West"
@@ -70,6 +73,9 @@ exports.getLocation = function (req, res) {
                     if(data[0] === undefined)
                         return;
                     else{
+                        if(!data[0].mapInfo.mapHierarchyString.includes("HearBit"))
+                            if(!res.headersSent)
+                                return res.send({error:"User outside Hearbit building."});
                         var wing;
                         if(parseFloat(data[0].mapCoordinate.x) < parseFloat(data[0].mapInfo.floorDimension.width)/2)
                             wing = "West"
@@ -92,9 +98,9 @@ exports.getLocation = function (req, res) {
                                 }
                             };
                             if(!res.headersSent)
-                               return res.send(info);
-                       }
-                   });
+                             return res.send(info);
+                     }
+                 });
 
                 result.on('end', function(result)
                 {
@@ -114,10 +120,10 @@ exports.getLocation = function (req, res) {
         });
     });
 
-    noMCH.on('error', function(e)
-    {
-        return res.json({error:'Can\'t connect to cisco cmx.'});
-    });
+noMCH.on('error', function(e)
+{
+    return res.json({error:'Can\'t connect to cisco cmx.'});
+});
 
-    noMCH.end();
+noMCH.end();
 }
