@@ -55,6 +55,51 @@ exports.roomStats = function(req, res) {
 }
 
 exports.applicationStats = function(req, res) {
+    var info = {};
+    var curr = new Date,
+    firstday, lastday;
+
+    firstday = new Date(curr.setDate(curr.getDate() - curr.getDay())).toISOString();
+    lastday = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6)).toISOString();
+    
+    sql.execute(sqlConfig, {
+        query: "SELECT COUNT(*) AS 'WeeklyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
+    })
+    .then(function(result) {
+        info['WeeklyUsers'] = result[0]['WeeklyUsers'];
+        firstday = new Date(curr.getFullYear(), curr.getMonth(), 1).toISOString();
+        lastday = new Date(curr.getFullYear(), curr.getMonth() + 1, 0).toISOString();
+        sql.execute(sqlConfig, {
+            query: "SELECT COUNT(*) AS 'MonthtlyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
+        })
+        .then(function(result) {
+            info['MonthyUsers'] = result[0]['MonthyUsers'];
+            sql.execute(sqlConfig, {
+                query: "SELECT SUM(tblRoom.WeeklyCounter) AS 'WeeklyCounter' FROM tblRoom WHERE tblRoom.WeeklyCounter IS NOT NULL"
+            })
+            .then(function(result) {
+                info['WeeklyRooms'] = result[0]['WeeklyRooms'];
+                sql.execute(sqlConfig, {
+                    query: "SELECT SUM(tblRoom.MonthlyCounter) AS 'MonthlyCounter' FROM tblRoom WHERE tblRoom.MonthlyCounter IS NOT NULL"
+                })
+                .then(function(result) {
+                    info['MonthyRooms'] = result[0]['MonthyRooms'];
+                    sql.execute(sqlConfig, {
+                        query: "SELECT SUM(tblUser.WeeklyNotifications) AS 'WeeklyNotifications' FROM tblUser WHERE tblUser.WeeklyNotifications IS NOT NULL"
+                    })
+                    .then(function(result) {
+                        info['WeeklyNotifications'] = result[0]['WeeklyNotifications'];
+                        sql.execute(sqlConfig, {
+                            query: "SELECT SUM(tblUser.MonthlyNotifications) AS 'MonthlyNotifications' FROM tblUser WHERE tblUser.MonthlyNotifications IS NOT NULL"
+                        })
+                        .then(function(result) {
+                            info['MonthyNotifications'] = result[0]['MonthyNotifications'];
+                            return res.send(info)
+                        })})})})})},
+        function(err){res.send(err)})
+}
+
+exports.applicationStatsQuery = function(req, res) {
     if (req.params.query == "Users") {
         var curr = new Date,
             firstday, lastday;
