@@ -50,8 +50,10 @@ router.route('/Booking/GetScheduledMeetings')
 // KPI
 router.route('/KPI/GetRoomStats/:query')
     .get(kpiController.roomStats);
-router.route('/KPI/GetAppStats/:query/:period')
+router.route('/KPI/GetAppStats')
     .get(kpiController.applicationStats);
+router.route('/KPI/GetAppStats/:query/:period')
+    .get(kpiController.applicationStatsQuery);
 router.route('/KPI/GetInflowStats/:query/:time')
     .get(kpiController.inflowStats);
 
