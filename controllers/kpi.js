@@ -269,9 +269,9 @@ exports.inflowStats = function(req, res) {
         });
 
         req.end();
-    } else if (req.params.query == "Floor" && req.params.time == "History") {
+    } else if (req.params.query == "Floor" && req.params.time == "History" && (req.params.type == 'json' || req.params.type == 'chart')) {
         var history = [];
-        getFloorHistoryStats(res, history, 1);
+        getFloorHistoryStats(req.params.type, res, history, 1);
     } else
         res.send({
             error: "Wrong query. (Building/[Now|History]/[json|chart] | Floor/[Now|History]/[json|chart])"
@@ -341,7 +341,7 @@ function getBuildingHistoryStats(type, res, history, count) {
     req.end();
 }
 
-function getFloorHistoryStats(res, history, count) {
+function getFloorHistoryStats(type, res, history, count) {
     var timeInterval = getWeek(count);
     var options = {
         host: cmxConfig.host,
@@ -378,10 +378,16 @@ function getFloorHistoryStats(res, history, count) {
 
                 history.push(info);
                 count++;
-                if (count == 5)
-                    res.send(history);
-                else
-                    getFloorHistoryStats(res, history, count);
+                if (count == 5) {
+                    if (type == 'json')
+                        res.send(history);
+                    else if (type = 'chart')
+                        return res.render('../views/plot', {
+                            lineFloorData: history
+                        });
+                } else {
+                    getFloorHistoryStats(type, res, history, count);
+                }
             } catch (err) {
                 var info = {
                     error: "Error with CMX analytics"
