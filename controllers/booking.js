@@ -14,11 +14,16 @@ exch.Url = new ews.Uri (ewsConfig.uri);
 
 exports.BookRoom = function (req, res) {
 
+    console.log(req.body);
+
     const alias = req.body.room;
     const startTime = new ews.DateTime.Parse(req.body.start).TotalMilliSeconds;
     const endTime   = startTime + 60*60*1000; // 1 hour
-
-    var attendees = JSON.parse(req.body.attendees);
+    
+    var attendees;
+    if(req.body.attendees.length > 0)
+        attendees = req.body.attendees.split(",");
+    else attendees = [];
     var appointment = new ews.Appointment(exch);
 
     var queryBuilder = "(|" ;
@@ -148,13 +153,13 @@ exports.getAvailability = function (req, res) {
     const startTime = new ews.DateTime.Parse(new Date(req.body.date)).TotalMilliSeconds;
 
     const endTime   = startTime + 24*60*60*1000; //one day
+    const result = SCHEDULE();
 
     var queryEWS = function (room, timeWindow) {
         exch.GetUserAvailability(room, timeWindow, ews.AvailabilityData.FreeBusy)
             .then(function (availabilityResponse) {
 
                 var info = [];
-                var result = SCHEDULE;
                 var meetings = availabilityResponse.attendeesAvailability.responses[0].calendarEvents;
 
                 for(var m in meetings) {
@@ -175,7 +180,6 @@ exports.getAvailability = function (req, res) {
                         //console.log(r + " " + result.length)
                     }
                 }
-
 
                 return res.send({suggestions:result});
 
@@ -248,22 +252,24 @@ var formatTime = function (date) {
     return result;
 }
 
-var SCHEDULE = [
-    ['08:00','09:00'],
-    ['08:30','09:30'],
-    ['09:00','10:00'],
-    ['09:30','10:30'],
-    ['10:00','11:00'],
-    ['10:30','11:30'],
-    ['11:00','12:00'],
-    ['11:30','12:30'],
-    ['12:00','13:00'],
-    ['12:30','13:30'],
-    ['13:00','14:00'],
-    ['13:30','14:30'],
-    ['14:00','15:00'],
-    ['14:30','15:30'],
-    ['15:00','16:00'],
-    ['15:30','16:30'],
-    ['16:00','17:00']
-];
+function SCHEDULE() {
+    return [
+        ['08:00', '09:00'],
+        ['08:30', '09:30'],
+        ['09:00', '10:00'],
+        ['09:30', '10:30'],
+        ['10:00', '11:00'],
+        ['10:30', '11:30'],
+        ['11:00', '12:00'],
+        ['11:30', '12:30'],
+        ['12:00', '13:00'],
+        ['12:30', '13:30'],
+        ['13:00', '14:00'],
+        ['13:30', '14:30'],
+        ['14:00', '15:00'],
+        ['14:30', '15:30'],
+        ['15:00', '16:00'],
+        ['15:30', '16:30'],
+        ['16:00', '17:00']
+    ];
+}

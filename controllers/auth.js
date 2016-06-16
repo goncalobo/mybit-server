@@ -1,7 +1,8 @@
 var User = require('../models/user');
 var jwt = require('jsonwebtoken');
 
-var sql = require ('seriate');
+var sql = require('seriate');
+var sqlConfig = require('../config').sqlConfig;
 
 var ActiveDirectory = require('activedirectory');
 var ADConfig = require('../config.js').activeDirectoryConfig;
@@ -9,6 +10,7 @@ var AD = new ActiveDirectory(ADConfig);
 
 exports.generateToken = function (req, res) {
 
+    console.log(req.body);
     var secret = req.body.secret;
 
     if(secret !== undefined){
@@ -26,8 +28,10 @@ exports.generateToken = function (req, res) {
         })
     }
 
-    const email = req.body.email;
+    const email = req.body.email.trim();
     const password = req.body.password;
+    const apptoken = req.body.apptoken;
+    const device = req.body.device;
 
     secret = require('../config').secret;
 
@@ -36,7 +40,19 @@ exports.generateToken = function (req, res) {
             error: "Email/password not sent."
         })
 
+    if(!(device == "iOS" || device == "Android" || device == "Windows"
+        || device == "android" || device == "windows" || device == "windows"))
+        return res.json({
+            error: "Device operating system not sent ('iOS'|'Android'|'Windows')"
+        })
+
+    if(apptoken === undefined)
+        return res.json({
+            error: "App token not sent."
+        })
+
     const username = email.substr(0,email.indexOf('@'));
+    var privileged = false; // default
 
     AD.authenticate(email, password, function(err, auth) {
         if (err) {
@@ -55,16 +71,44 @@ exports.generateToken = function (req, res) {
                     return;
                 }
 
-                if (!user) console.log('User: ' + username + ' not found.');
-                else {
-                    var name = user.displayName;
-                    User.findUser(username, email, name);
-                    var token = User.createSession({username: username, displayname: name, email:email}, secret);
+                console.log(user);
 
-                    return res.json({
-                        success: true,
-                        token: token
-                    });
+                if (!user) return res.send({error:'User: ' + username + ' not found.'});
+                else {
+                    AD.getGroupMembershipForUser(username, function (err, groups) {
+                        if(err) {
+                            res.send({
+                                message: "ERROR",
+                                error: err
+                            })
+                        }
+
+                        if(!groups)
+                            console.log('Teams: ' + username + ' not found.');
+                        else {
+                            privileged = JSON.stringify(groups).includes("Bit-Management");
+                        }
+                        
+                    var name = user.displayName;
+                    User.findUser(username, email, name, device, apptoken, privileged);
+
+                    var token = User.createSession({username: username, displayname: name, email:email, device:device, apptoken:apptoken, privileged:privileged}, secret);
+
+                        sql.execute( sqlConfig, {
+                                query: "SELECT Privileged AS 'privileged' FROM tblUser WHERE tblUser.Username = '" + username + "'"
+                            }
+                        ).then(function (results) {
+                            console.log(results);
+                            return res.json({
+                                success: true,
+                                privileged:results[0].privileged,
+                                token: token
+                            });
+                        })
+
+
+
+                    })
                 }
             });
         }

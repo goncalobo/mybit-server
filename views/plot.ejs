@@ -1,6 +1,15 @@
 <html>
-<header>
-</header>
+<head>
+ <style>
+  @import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+  tspan {
+   color:#afaaaa!important;
+   fill:#afaaaa!important;
+   font-family:'Montserrat';
+  }
+ </style>
+</head>
 <body>
 <div id="container" style="min-width: 100%; height: 100%; max-width: 100%; margin: 0 auto"></div>
 <script src="../../../libs/jquery.min.js"></script>
@@ -33,37 +42,53 @@
       enabled: false
      },
      showInLegend: true,
-     enableMouseTracking: false
+     enableMouseTracking: false,
+     allowPointSelect: false
     },
     series: {
+     states: {
+      hover: {
+       enabled: false
+      },
+     },
      marker: {
-      enabled: true,
+      enabled: false,
       symbol : 'circle',
       radius : 12
+     },
+     point: {
+      events: {
+       legendItemClick: function () {
+        return false; // <== returning false will cancel the default action
+       }
+      }
      }
     }
    },
    legend: {
     layout: 'vertical',
     align: 'right',
+    itemMarginBottom: 5,
     verticalAlign: 'middle',
    },
    series: [{
-    name: 'Rooms',
+    name: 'rooms',
     colorByPoint: true,
     data: [{
-     name: 'Formal - <%-pieData.Formal%>',
+     name: 'formal - <%-pieData.Formal%>',
      y: <%-pieData.Formal%>,
      color:'#946fb1',
      marker : {symbol : 'circle',radius : 5 }
     }, {
-     name: 'Informal - <%-pieData.Informal%>',
+     name: 'informal - <%-pieData.Informal%>',
      y: <%-pieData.Informal%>,
      color:'#e6e6e6',
      marker : {symbol : 'circle',radius : 5 }
     }],
     innerSize: '75%'
-   }]
+   }],
+          allowPointSelect: false
+
   });
   <% }
   else if ((lineData !== undefined)) {%>

@@ -25,5 +25,12 @@ module.exports = {
         password: 'feup%01',
         uri: 'https://outlook.office365.com/EWS/exchange.asmx'
     },
+    notificationConfig : {
+        android: 'AIzaSyC_tH6dsoF9uy3bruvQdyMNwaPJ1yBaf78',
+        ios: {
+            cert:'',
+            key:''
+        }
+    },
     secret: 'mybitsecretkey'
 };
