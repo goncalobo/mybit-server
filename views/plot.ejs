@@ -1,76 +1,173 @@
 <html>
 <header>
 </header>
-<body>
-<div id="container" style="min-width: 100%; height: 100%; max-width: 100%; margin: 0 auto"></div>
-<script src="../../../libs/jquery.min.js"></script>
-<script>
- $(document).ready(function () {
-  <% if (pieData !== undefined) { %>
-  $('#container').highcharts({
-   chart: {
-    plotBackgroundColor: null,
-    plotBorderWidth: null,
-    plotShadow: false,
-    type: 'pie',
-    style: {
-     fontFamily: 'Helvetica',
-     color: "#e6e6e6"
-    },
-   },
-   exporting: { enabled: false },
-   title: {
-    text: ''
-   },
-   tooltip: {
-    enabled: false,
-    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-   },
-   plotOptions: {
-    pie: {
-     cursor: 'pointer',
-     dataLabels: {
-      enabled: false
-     },
-     showInLegend: true,
-     enableMouseTracking: false
-    },
-    series: {
-     marker: {
-      enabled: true,
-      symbol : 'circle',
-      radius : 12
-     }
-    }
-   },
-   legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'middle',
-   },
-   series: [{
-    name: 'Rooms',
-    colorByPoint: true,
-    data: [{
-     name: 'Formal - <%-pieData.Formal%>',
-     y: <%-pieData.Formal%>,
-     color:'#946fb1',
-     marker : {symbol : 'circle',radius : 5 }
-    }, {
-     name: 'Informal - <%-pieData.Informal%>',
-     y: <%-pieData.Informal%>,
-     color:'#e6e6e6',
-     marker : {symbol : 'circle',radius : 5 }
-    }],
-    innerSize: '75%'
-   }]
-  });
-  <% }
-  else if ((lineData !== undefined)) {%>
-  <%}%>
- });
-</script>
-<script src="../../../libs/highcharts.min.js"></script>
-</body>
-</html>
 
+<body>
+    <div id="container" style="min-width: 100%; height: 100%; max-width: 100%; margin: 0 auto"></div>
+    <script src="../../../../../libs/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            <% if (locals.pieData !== undefined) { %>
+            $('#container').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie',
+                    style: {
+                        fontFamily: 'Helvetica',
+                        color: "#e6e6e6"
+                    },
+                },
+                exporting: {
+                    enabled: false
+                },
+                title: {
+                    text: ''
+                },
+                tooltip: {
+                    enabled: false,
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: false
+                        },
+                        showInLegend: true,
+                        enableMouseTracking: false
+                    },
+                    series: {
+                        marker: {
+                            enabled: true,
+                            symbol: 'circle',
+                            radius: 12
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                },
+                series: [{
+                    name: 'Rooms',
+                    colorByPoint: true,
+                    data: [{
+                        name: 'Formal - <%-pieData.Formal%>',
+                        y: <%-pieData.Formal%>,
+                        color: '#946fb1',
+                        marker: {
+                            symbol: 'circle',
+                            radius: 5
+                        }
+                    }, {
+                        name: 'Informal - <%-pieData.Informal%>',
+                        y: <%-pieData.Informal%>,
+                        color: '#e6e6e6',
+                        marker: {
+                            symbol: 'circle',
+                            radius: 5
+                        }
+                    }],
+                    innerSize: '75%'
+                }]
+            });
+            <% }
+            else if (locals.lineBuildingData !== undefined) {
+              var data = "[";
+              var total = "[";
+              var newV = "[";
+              var repeat = "[";
+              for(var i=0; i < lineBuildingData.length; i++) {
+                data += "'" + lineBuildingData[i].Start + " - " + lineBuildingData[i].End;
+                total += lineBuildingData[i].TotalVisitors;
+                repeat += lineBuildingData[i].RepeatVisitors;
+                newV += lineBuildingData[i].NewVisitors;
+
+                if(i <lineBuildingData.length -1) {
+                  data += "',";
+                  total += ",";
+                  newV += ",";
+                  repeat += ",";
+                }
+                else
+                  data += "'";
+              }
+              data += "]";
+              total += "]";
+              repeat += "]";
+              newV += "]";
+              %>
+            $('#container').highcharts({
+                chart: {
+                    type: 'line',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    style: {
+                        fontFamily: 'Helvetica',
+                        color: "#e6e6e6"
+                    }
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: <%-data%>,
+                    lineColor: '#e6e6e6',
+                    tickColor: '#e6e6e6',
+                    labels: {
+                        style: {
+                            color: '#e6e6e6',
+                            font: 'Helvetica'
+                        }
+                    }
+                },
+                yAxis: {
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0,
+                    lineColor: 'transparent',
+                    tickLength: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Total',
+                    data: <%-total%>,
+                    color: "#e6e6e6"
+                }, {
+                    name: 'New',
+                    data: <%-newV%>,
+                    color: "#946fb1"
+                }, {
+                    name: 'Repeat',
+                    data: <%-repeat%>
+                }]
+            });
+            <%}%>
+        });
+    </script>
+    <script src="../../../../../libs/highcharts.min.js"></script>
+</body>
+
+</html>
