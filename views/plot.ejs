@@ -12,10 +12,10 @@
 </head>
 <body>
 <div id="container" style="min-width: 100%; height: 100%; max-width: 100%; margin: 0 auto"></div>
-<script src="../../../libs/jquery.min.js"></script>
+<script src="/libs/jquery.min.js"></script>
 <script>
  $(document).ready(function () {
-  <% if (pieData !== undefined) { %>
+  <% if (locals.pieData !== undefined) { %>
   $('#container').highcharts({
    chart: {
     plotBackgroundColor: null,
@@ -90,12 +90,201 @@
           allowPointSelect: false
 
   });
-  <% }
-  else if ((lineData !== undefined)) {%>
-  <%}%>
- });
-</script>
-<script src="../../../libs/highcharts.min.js"></script>
-</body>
-</html>
 
+            <% }
+            else if (locals.lineBuildingData !== undefined) {
+              var data = "[";
+              var total = "[";
+              var newV = "[";
+              var repeat = "[";
+              for(var i=0; i < lineBuildingData.length; i++) {
+                data += "'" + lineBuildingData[i].Start + " - " + lineBuildingData[i].End;
+                total += lineBuildingData[i].TotalVisitors;
+                repeat += lineBuildingData[i].RepeatVisitors;
+                newV += lineBuildingData[i].NewVisitors;
+
+                if(i <lineBuildingData.length -1) {
+                  data += "',";
+                  total += ",";
+                  newV += ",";
+                  repeat += ",";
+                }
+              }
+              data += "']";
+              total += "]";
+              repeat += "]";
+              newV += "]";
+              %>
+            $('#container').highcharts({
+                chart: {
+                    type: 'line',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    style: {
+                        fontFamily: 'Helvetica',
+                        color: "#e6e6e6"
+                    }
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: <%-data%>,
+                    lineColor: '#e6e6e6',
+                    tickColor: '#e6e6e6',
+                    labels: {
+                        style: {
+                            color: '#e6e6e6',
+                            font: 'Helvetica'
+                        }
+                    }
+                },
+                yAxis: {
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0,
+                    lineColor: 'transparent',
+                    tickLength: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Total',
+                    data: <%-total%>,
+                    color: "#e6e6e6"
+                }, {
+                    name: 'New',
+                    data: <%-newV%>,
+                    color: "#946fb1"
+                }, {
+                    name: 'Repeat',
+                    data: <%-repeat%>
+                }]
+            });
+            <%}
+            else if (locals.lineFloorData !== undefined) {
+              var data = "[";
+              var floor1 = "[";
+              var floor2 = "[";
+              var floor3 = "[";
+              var floor4 = "[";
+              var floor5 = "[";
+              for(var i=0; i < lineFloorData.length; i++) {
+                data += "'" + lineFloorData[i].Start + " - " + lineFloorData[i].End;
+                floor1 += lineFloorData[i].Piso1TotalVisitors;
+                floor2 += lineFloorData[i].Piso2TotalVisitors;
+                floor3 += lineFloorData[i].Piso3TotalVisitors;
+                floor4 += lineFloorData[i].Piso4TotalVisitors;
+                floor5 += lineFloorData[i].Piso5TotalVisitors;
+
+                if(i <lineFloorData.length -1) {
+                  data += "',";
+                  floor1 += ",";
+                  floor2 += ",";
+                  floor3 += ",";
+                  floor4 += ",";
+                  floor5 += ",";
+                }
+              }
+              data += "']";
+              floor1 += "]";
+              floor2 += "]";
+              floor3 += "]";
+              floor4 += "]";
+              floor5 += "]";
+              %>
+            $('#container').highcharts({
+                chart: {
+                    type: 'line',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    style: {
+                        fontFamily: 'Helvetica',
+                        color: "#e6e6e6"
+                    }
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: <%-data%>,
+                    lineColor: '#e6e6e6',
+                    tickColor: '#e6e6e6',
+                    labels: {
+                        style: {
+                            color: '#e6e6e6',
+                            font: 'Helvetica'
+                        }
+                    }
+                },
+                yAxis: {
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0,
+                    lineColor: 'transparent',
+                    tickLength: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Floor 1',
+                    data: <%-floor1%>,
+                    color: "#e6e6e6"
+                }, {
+                    name: 'Floor 2',
+                    data: <%-floor2%>,
+                    color: "#946fb1"
+                }, {
+                    name: 'Floor 3',
+                    data: <%-floor3%>
+                }, {
+                    name: 'Floor 4',
+                    data: <%-floor4%>
+                }, {
+                    name: 'Floor 5',
+                    data: <%-floor5%>
+                }]
+            });
+            <%}%>
+        });
+    </script>
+    <script src="/libs/highcharts.min.js"></script>
+</body>
+
+</html>

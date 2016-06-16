@@ -7,8 +7,8 @@ var https = require("https");
 exports.roomStats = function(req, res) {
     if (req.params.query == "Booked") {
         sql.execute(sqlConfig, {
-            query: "SELECT TOP 5 Name, TotalCounter FROM tblRoom ORDER BY tblRoom.TotalCounter DESC"
-        })
+                query: "SELECT TOP 5 Name, TotalCounter FROM tblRoom ORDER BY tblRoom.TotalCounter DESC"
+            })
             .then(function(result) {
                 return res.send(result)
             }, function(err) {
@@ -17,8 +17,8 @@ exports.roomStats = function(req, res) {
     } else
     if (req.params.query == "Hours") {
         sql.execute(sqlConfig, {
-            query: "SELECT TOP 5 Name, TotalHours FROM tblRoom ORDER BY tblRoom.TotalHours DESC"
-        })
+                query: "SELECT TOP 5 Name, TotalHours FROM tblRoom ORDER BY tblRoom.TotalHours DESC"
+            })
             .then(function(result) {
                 return res.send(result)
             }, function(err) {
@@ -27,8 +27,8 @@ exports.roomStats = function(req, res) {
     } else
     if (req.params.query == "TotalDuration") {
         sql.execute(sqlConfig, {
-            query: "SELECT SUM(tblRoom.TotalHours) AS 'TotalDuration' FROM tblRoom WHERE tblRoom.TotalHours IS NOT NULL"
-        })
+                query: "SELECT SUM(tblRoom.TotalHours) AS 'TotalDuration' FROM tblRoom WHERE tblRoom.TotalHours IS NOT NULL"
+            })
             .then(function(result) {
                 return res.send(result[0])
             }, function(err) {
@@ -37,14 +37,16 @@ exports.roomStats = function(req, res) {
     } else
     if (req.params.query == "FormalVSInformal") {
         sql.execute(sqlConfig, {
-            query: "SELECT " +
-            "(SELECT SUM(tblRoom.TotalCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 1 AND tblRoom.TotalCounter IS NOT NULL)" +
-            "AS 'Formal', " +
-            "(SELECT SUM(tblRoom.TotalCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 0 AND tblRoom.TotalCounter IS NOT NULL)" +
-            "AS 'Informal'"
-        })
+                query: "SELECT " +
+                    "(SELECT SUM(tblRoom.TotalCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 1 AND tblRoom.TotalCounter IS NOT NULL)" +
+                    "AS 'Formal', " +
+                    "(SELECT SUM(tblRoom.TotalCounter) AS 'Total' FROM tblRoom WHERE tblRoom.Formal = 0 AND tblRoom.TotalCounter IS NOT NULL)" +
+                    "AS 'Informal'"
+            })
             .then(function(result) {
-                return res.render('../views/plot',{pieData: result[0]});
+                return res.render('../views/plot', {
+                    pieData: result[0]
+                });
                 //return res.send(result[0])
             }, function(err) {
                 return res.send(err)
@@ -64,41 +66,48 @@ exports.applicationStats = function(req, res) {
     lastday = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6)).toISOString();
 
     sql.execute(sqlConfig, {
-        query: "SELECT COUNT(*) AS 'WeeklyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
-    })
+            query: "SELECT COUNT(*) AS 'WeeklyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
+        })
         .then(function(result) {
                 info['WeeklyUsers'] = result[0]['WeeklyUsers'];
                 firstday = new Date(curr.getFullYear(), curr.getMonth(), 1).toISOString();
                 lastday = new Date(curr.getFullYear(), curr.getMonth() + 1, 0).toISOString();
                 sql.execute(sqlConfig, {
-                    query: "SELECT COUNT(*) AS 'MonthtlyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
-                })
+                        query: "SELECT COUNT(*) AS 'MonthtlyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
+                    })
                     .then(function(result) {
                         info['MonthtlyUsers'] = result[0]['MonthtlyUsers'];
                         sql.execute(sqlConfig, {
-                            query: "SELECT SUM(tblRoom.WeeklyCounter) AS 'WeeklyCounter' FROM tblRoom WHERE tblRoom.WeeklyCounter IS NOT NULL"
-                        })
+                                query: "SELECT SUM(tblRoom.WeeklyCounter) AS 'WeeklyCounter' FROM tblRoom WHERE tblRoom.WeeklyCounter IS NOT NULL"
+                            })
                             .then(function(result) {
                                 info['WeeklyRooms'] = result[0]['WeeklyCounter'];
                                 sql.execute(sqlConfig, {
-                                    query: "SELECT SUM(tblRoom.MonthlyCounter) AS 'MonthlyRooms' FROM tblRoom WHERE tblRoom.MonthlyCounter IS NOT NULL"
-                                })
+                                        query: "SELECT SUM(tblRoom.MonthlyCounter) AS 'MonthlyRooms' FROM tblRoom WHERE tblRoom.MonthlyCounter IS NOT NULL"
+                                    })
                                     .then(function(result) {
                                         console.log(result)
                                         info['MonthlyRooms'] = result[0]['MonthlyRooms'];
                                         sql.execute(sqlConfig, {
-                                            query: "SELECT SUM(tblUser.WeeklyNotifications) AS 'WeeklyNotifications' FROM tblUser WHERE tblUser.WeeklyNotifications IS NOT NULL"
-                                        })
+                                                query: "SELECT SUM(tblUser.WeeklyNotifications) AS 'WeeklyNotifications' FROM tblUser WHERE tblUser.WeeklyNotifications IS NOT NULL"
+                                            })
                                             .then(function(result) {
                                                 info['WeeklyNotifications'] = result[0]['WeeklyNotifications'];
                                                 sql.execute(sqlConfig, {
-                                                    query: "SELECT SUM(tblUser.MonthlyNotifications) AS 'MonthlyNotifications' FROM tblUser WHERE tblUser.MonthlyNotifications IS NOT NULL"
-                                                })
+                                                        query: "SELECT SUM(tblUser.MonthlyNotifications) AS 'MonthlyNotifications' FROM tblUser WHERE tblUser.MonthlyNotifications IS NOT NULL"
+                                                    })
                                                     .then(function(result) {
                                                         info['MonthlyNotifications'] = result[0]['MonthlyNotifications'];
                                                         return res.send(info)
-                                                    })})})})})},
-            function(err){res.send(err)})
+                                                    })
+                                            })
+                                    })
+                            })
+                    })
+            },
+            function(err) {
+                res.send(err)
+            })
 }
 
 exports.applicationStatsQuery = function(req, res) {
@@ -195,7 +204,7 @@ exports.inflowStats = function(req, res) {
                     res.send(info);
                 } catch (err) {
                     var info = {
-                        "Error": "Error with CMX analytics"
+                        error: "Error with CMX analytics"
                     };
                     res.send(info);
                 }
@@ -209,9 +218,9 @@ exports.inflowStats = function(req, res) {
         });
 
         req.end();
-    } else if (req.params.query == "Building" && req.params.time == "History") {
+    } else if (req.params.query == "Building" && req.params.time == "History" && (req.params.type == 'json' || req.params.type == 'chart')) {
         var history = [];
-        getBuildingHistoryStats(res, history, 1);
+        getBuildingHistoryStats(req.params.type, res, history, 1);
     } else
     if (req.params.query == "Floor" && req.params.time == "Now") {
         var options = {
@@ -246,7 +255,7 @@ exports.inflowStats = function(req, res) {
                     res.send(info);
                 } catch (err) {
                     var info = {
-                        "Error": "Error with CMX analytics"
+                        error: "Error with CMX analytics"
                     };
                     res.send(info);
                 }
@@ -260,17 +269,17 @@ exports.inflowStats = function(req, res) {
         });
 
         req.end();
-    } else if (req.params.query == "Floor" && req.params.time == "History") {
+    } else if (req.params.query == "Floor" && req.params.time == "History" && (req.params.type == 'json' || req.params.type == 'chart')) {
         var history = [];
-        getFloorHistoryStats(res, history, 1);
+        getFloorHistoryStats(req.params.type, res, history, 1);
     } else
         res.send({
-            error: "Wrong query. (Building/[Now | History] | Floor[Now | History])"
+            error: "Wrong query. (Building/[Now|History]/[json|chart] | Floor/[Now|History]/[json|chart])"
         });
 
 }
 
-function getBuildingHistoryStats(res, history, count) {
+function getBuildingHistoryStats(type, res, history, count) {
     var timeInterval = getWeek(count);
     var options = {
         host: cmxConfig.host,
@@ -304,14 +313,19 @@ function getBuildingHistoryStats(res, history, count) {
                 }
                 history.push(info);
                 count++;
-                if (count == 5)
-                    res.send(history);
-                else {
-                    getBuildingHistoryStats(res, history, count);
+                if (count == 5) {
+                    if (type == 'json')
+                        res.send(history);
+                    else if (type = 'chart')
+                        return res.render('../views/plot', {
+                            lineBuildingData: history
+                        });
+                } else {
+                    getBuildingHistoryStats(type, res, history, count);
                 }
             } catch (err) {
                 var info = {
-                    "Error": "Error with CMX analytics"
+                    error: "Error with CMX analytics"
                 };
                 res.send(info);
             }
@@ -327,7 +341,7 @@ function getBuildingHistoryStats(res, history, count) {
     req.end();
 }
 
-function getFloorHistoryStats(res, history, count) {
+function getFloorHistoryStats(type, res, history, count) {
     var timeInterval = getWeek(count);
     var options = {
         host: cmxConfig.host,
@@ -364,13 +378,19 @@ function getFloorHistoryStats(res, history, count) {
 
                 history.push(info);
                 count++;
-                if (count == 5)
-                    res.send(history);
-                else
-                    getFloorHistoryStats(res, history, count);
+                if (count == 5) {
+                    if (type == 'json')
+                        res.send(history);
+                    else if (type = 'chart')
+                        return res.render('../views/plot', {
+                            lineFloorData: history
+                        });
+                } else {
+                    getFloorHistoryStats(type, res, history, count);
+                }
             } catch (err) {
                 var info = {
-                    "Error": "Error with CMX analytics"
+                    error: "Error with CMX analytics"
                 };
                 res.send(info);
             }

@@ -109,9 +109,10 @@ API Usage
 <hr>
 <h4>KPI</h4>
 <h5>InFlow Stats</h5>
-<code><b>GET:  </b>localhost:1337/API/KPI/GetInflowStats/:Place/:Time</b></code><br>
+<code><b>GET:  </b>localhost:1337/API/KPI/GetInflowStats/:Place/:Time/:Type</b></code><br>
 - Place: <b>Building</b> or <b>Floor</b><br>
 - Time: <b>Now</b> or <b>History</b>
+- Type: <b>json</b> or <b>chart</b>
  ```json
  Building Now
  {
@@ -120,7 +121,7 @@ API Usage
   "NewVisitors": 0
 }
 
-Building History
+Building History json
 [
     {
         "Week": 1,
@@ -165,7 +166,7 @@ Floors Now
   "Piso5TotalVisitors": 0
 }
 
-Floors History
+Floors History json
 {
     {
         "Week": 1,

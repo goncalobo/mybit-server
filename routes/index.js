@@ -54,7 +54,7 @@ router.route('/KPI/GetAppStats')
     .get(kpiController.applicationStats);
 router.route('/KPI/GetAppStats/:query/:period')
     .get(kpiController.applicationStatsQuery);
-router.route('/KPI/GetInflowStats/:query/:time')
+router.route('/KPI/GetInflowStats/:query/:time/:type')
     .get(kpiController.inflowStats);
 
 // Notifications
