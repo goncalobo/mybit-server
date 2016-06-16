@@ -44,7 +44,8 @@ exports.roomStats = function(req, res) {
                     "AS 'Informal'"
             })
             .then(function(result) {
-                return res.send(result[0])
+                return res.render('../views/plot',{pieData: result[0]});
+                //return res.send(result[0])
             }, function(err) {
                 return res.send(err)
             })
@@ -73,17 +74,18 @@ exports.applicationStats = function(req, res) {
             query: "SELECT COUNT(*) AS 'MonthtlyUsers' FROM tblUser WHERE tblUser.LastActivity BETWEEN '" + firstday + "' AND '" + lastday + "'"
         })
         .then(function(result) {
-            info['MonthyUsers'] = result[0]['MonthyUsers'];
+            info['MonthtlyUsers'] = result[0]['MonthtlyUsers'];
             sql.execute(sqlConfig, {
                 query: "SELECT SUM(tblRoom.WeeklyCounter) AS 'WeeklyCounter' FROM tblRoom WHERE tblRoom.WeeklyCounter IS NOT NULL"
             })
             .then(function(result) {
-                info['WeeklyRooms'] = result[0]['WeeklyRooms'];
+                info['WeeklyRooms'] = result[0]['WeeklyCounter'];
                 sql.execute(sqlConfig, {
-                    query: "SELECT SUM(tblRoom.MonthlyCounter) AS 'MonthlyCounter' FROM tblRoom WHERE tblRoom.MonthlyCounter IS NOT NULL"
+                    query: "SELECT SUM(tblRoom.MonthlyCounter) AS 'MonthlyRooms' FROM tblRoom WHERE tblRoom.MonthlyCounter IS NOT NULL"
                 })
                 .then(function(result) {
-                    info['MonthyRooms'] = result[0]['MonthyRooms'];
+                    console.log(result)
+                    info['MonthlyRooms'] = result[0]['MonthlyRooms'];
                     sql.execute(sqlConfig, {
                         query: "SELECT SUM(tblUser.WeeklyNotifications) AS 'WeeklyNotifications' FROM tblUser WHERE tblUser.WeeklyNotifications IS NOT NULL"
                     })
@@ -93,7 +95,7 @@ exports.applicationStats = function(req, res) {
                             query: "SELECT SUM(tblUser.MonthlyNotifications) AS 'MonthlyNotifications' FROM tblUser WHERE tblUser.MonthlyNotifications IS NOT NULL"
                         })
                         .then(function(result) {
-                            info['MonthyNotifications'] = result[0]['MonthyNotifications'];
+                            info['MonthlyNotifications'] = result[0]['MonthlyNotifications'];
                             return res.send(info)
                         })})})})})},
         function(err){res.send(err)})

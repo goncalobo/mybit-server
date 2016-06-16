@@ -1,6 +1,10 @@
 var sql = require('seriate');
 var sqlConfig = require('../config').sqlConfig;
 
+var ActiveDirectory = require('activedirectory');
+var ADConfig = require('../config.js').activeDirectoryConfig;
+var AD = new ActiveDirectory(ADConfig);
+
 var ews = require('ews-javascript-api');
 var ewsConfig = require('../config').ewsConfig;
 var exch = new ews.ExchangeService(ews.ExchangeVersion.Exchange2013);
@@ -17,19 +21,21 @@ exports.BookRoom = function (req, res) {
     var attendees = JSON.parse(req.body.attendees);
     var appointment = new ews.Appointment(exch);
 
-    var queryBuilder = "SELECT tblUser.Email FROM tblUser WHERE (tblUser.Username = '" + attendees[0] + "' " ;
-    for(var i = 1; i<attendees.length; i++)
-        queryBuilder += " OR tblUser.Username = '" + attendees[i] + "'";
+    var queryBuilder = "(|" ;
+    for(var a in attendees)
+        queryBuilder += "(sAMAccountName=" + attendees[a] + ")";
     queryBuilder += ")";
 
-    sql.execute(sqlConfig,{
-        query:  "SELECT tblRoom.Name, tblRoom.Email FROM tblRoom WHERE tblRoom.Alias = '" + alias + "'"
-    })
-        .then(function (roomResult) {
+    AD.findUsers(queryBuilder, function(err, users) {
+        if (err)
+            return res.send({error:JSON.stringify(err)});
+
+
             sql.execute(sqlConfig,{
-                query:  queryBuilder
+                query:  "SELECT tblRoom.Name, tblRoom.Email FROM tblRoom WHERE tblRoom.Alias = '" + alias + "'"
             })
-                .then(function (attendeesResult) {
+                .then(function (roomResult) {
+
                     var room = [new ews.AttendeeInfo(roomResult[0].Email)];
                     var timeWindow = new ews.TimeWindow(new ews.DateTime(startTime), new ews.DateTime(endTime + 24 * 60 * 60 * 1000));
 
@@ -41,48 +47,48 @@ exports.BookRoom = function (req, res) {
                     appointment.RequiredAttendees.Add(roomResult[0].Email);
                     appointment.RequiredAttendees.Add(req.decoded.email);
 
-                    for (var a in attendees)
-                        appointment.RequiredAttendees.Add(attendeesResult[a].Email);
+                    for (var u in users)
+                        appointment.RequiredAttendees.Add(users[u].mail);
 
                     return scheduleIfAvailable(room, timeWindow, appointment);
                 });
-        });
+    });
 
     var scheduleIfAvailable = function (room, timeWindow, appointment) {
-        return exch.GetUserAvailability(room, timeWindow, ews.AvailabilityData.FreeBusyAndSuggestions)
-            .then(function (availabilityResponse) {
-                var info = [];
-                var meetings = availabilityResponse.attendeesAvailability.responses[0].calendarEvents;
-                for (var m in meetings) {
-                    info.push({
-                        startTime: meetings[m].startTime.momentDate,
-                        endTime: meetings[m].endTime.momentDate
-                    });
-                }
-
-                for (var i in info) {
-                    if ((info[i].startTime < appointment.End.momentDate)
-                        && (info[i].endTime > appointment.Start.momentDate))
-                        return res.send({error: "Scheduled meetings overlaps existing meetings."});
-                }
-
-                appointment.Save(ews.SendInvitationsMode.SendToAllAndSaveCopy)
-                    .then(function (availabilityResponse) {
-                        var duration = (endTime - startTime) / (1000 * 60 * 60); //in hours
-
-                        updateCounter(alias, duration);
-                        res.send({
-                            success: "Room booked.",
-                            start: appointment.Start.momentDate,
-                            end: appointment.End.momentDate,
-                            location: appointment.Location,
-                            subject: appointment.Subject,
-                            duration: duration
+            return exch.GetUserAvailability(room, timeWindow, ews.AvailabilityData.FreeBusyAndSuggestions)
+                .then(function (availabilityResponse) {
+                    var info = [];
+                    var meetings = availabilityResponse.attendeesAvailability.responses[0].calendarEvents;
+                    for (var m in meetings) {
+                        info.push({
+                            startTime: meetings[m].startTime.momentDate,
+                            endTime: meetings[m].endTime.momentDate
                         });
+                    }
 
-                    });
-            })
-    }
+                    for (var i in info) {
+                        if ((info[i].startTime < appointment.End.momentDate)
+                            && (info[i].endTime > appointment.Start.momentDate))
+                            return res.send({error: "Scheduled meetings overlaps existing meetings."});
+                    }
+
+                    appointment.Save(ews.SendInvitationsMode.SendToAllAndSaveCopy)
+                        .then(function (availabilityResponse) {
+                            var duration = (endTime - startTime) / (1000 * 60 * 60); //in hours
+
+                            updateCounter(alias, duration);
+                            res.send({
+                                success: "Room booked.",
+                                start: appointment.Start.momentDate,
+                                end: appointment.End.momentDate,
+                                location: appointment.Location,
+                                subject: appointment.Subject,
+                                duration: duration
+                            });
+
+                        });
+                })
+        }
 }
 
 exports.getScheduledMeetings = function (req, res) {
