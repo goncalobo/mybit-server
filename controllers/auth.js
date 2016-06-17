@@ -41,7 +41,7 @@ exports.generateToken = function (req, res) {
         })
 
     if(!(device == "iOS" || device == "Android" || device == "Windows"
-        || device == "android" || device == "windows" || device == "windows"))
+        || device == "ios" || device == "android" || device == "windows"))
         return res.json({
             error: "Device operating system not sent ('iOS'|'Android'|'Windows')"
         })
