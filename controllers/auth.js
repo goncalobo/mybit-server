@@ -10,7 +10,6 @@ var AD = new ActiveDirectory(ADConfig);
 
 exports.generateToken = function (req, res) {
 
-    console.log(req.body);
     var secret = req.body.secret;
 
     if(secret !== undefined){
@@ -71,8 +70,6 @@ exports.generateToken = function (req, res) {
                     return;
                 }
 
-                console.log(user);
-
                 if (!user) return res.send({error:'User: ' + username + ' not found.'});
                 else {
                     AD.getGroupMembershipForUser(username, function (err, groups) {
@@ -98,12 +95,18 @@ exports.generateToken = function (req, res) {
                                 query: "SELECT Privileged AS 'privileged' FROM tblUser WHERE tblUser.Username = '" + username + "'"
                             }
                         ).then(function (results) {
-                            console.log(results);
+                            if(results.length > 0)
                             return res.json({
                                 success: true,
-                                privileged:results[0].privileged,
+                                privileged:true,
                                 token: token
-                            });
+                            })
+                            else
+                            return res.json({
+                                success: true,
+                                privileged:false,
+                                token: token
+                            })
                         })
 
 
@@ -173,7 +176,6 @@ exports.refreshToken = function (req, res) {
 }
 
 exports.getUser = function(req, res) {
-    console.log(req.decoded)
     res.send({
         "username": req.decoded.username,
         "displayname": req.decoded.displayname,

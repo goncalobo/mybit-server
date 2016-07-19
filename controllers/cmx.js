@@ -32,7 +32,7 @@ exports.getLocation = function (req, res) {
             if(data[0] === undefined)
                 return;
             else{
-                if(!data[0].mapInfo.mapHierarchyString.includes("HeartBit"))
+                if(!(data[0].mapInfo.mapHierarchyString.includes("HeartBit")||data[0].mapInfo.mapHierarchyString.includes("PacosS.João")))
                     if(!res.headersSent)
                         return res.send({error:"User outside Hearbit building."});
                 var wing;
@@ -69,11 +69,11 @@ exports.getLocation = function (req, res) {
                 result.on('data', function (chunk)
                 {
                     data = JSON.parse(chunk);
-
+                    
                     if(data[0] === undefined)
                         return;
                     else{
-                        if(!data[0].mapInfo.mapHierarchyString.includes("HearBit"))
+                        if(!(data[0].mapInfo.mapHierarchyString.includes("HeartBit")||data[0].mapInfo.mapHierarchyString.includes("PacosS.João")))
                             if(!res.headersSent)
                                 return res.send({error:"User outside Hearbit building."});
                         var wing;
